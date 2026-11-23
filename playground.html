@@ -5,10 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Playground | Keady Van Zandt</title>
 <meta name="description" content="Experiments, sketches and side projects by Keady Van Zandt.">
-<script>document.documentElement.classList.add("js");</script>
+<script>
+  /* Runs before the page appears. Turns on animations, and if you arrived
+     through a bubble, covers the page so the bubble can pop. Keep this on every page. */
+  (function (d) {
+    d.classList.add("js");
+    try {
+      var c = sessionStorage.getItem("kv-bubble");
+      if (c && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        d.classList.add("is-arriving");
+        d.style.setProperty("--arrive", "var(--" + c + ")");
+      } else if (c) { sessionStorage.removeItem("kv-bubble"); }
+    } catch (e) {}
+  })(document.documentElement);
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:opsz,wght@9..40,400;9..40,700&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 <script src="js/main.js" defer></script>
 </head>
@@ -18,7 +31,10 @@
 
 <header class="site-header">
   <div class="container">
-    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">KV</span> Keady Van Zandt</a>
+    <a class="brand" href="index.html">
+      <span class="brand-photo"><img src="images/headshot-web.jpg" alt="" width="42" height="42"></span>
+      Keady Van Zandt
+    </a>
     <nav class="site-nav" aria-label="Main">
       <a href="index.html#work">Work</a>
       <a href="playground.html" aria-current="page">Playground</a>
@@ -31,8 +47,8 @@
 <main id="main">
   <section class="page-intro">
     <div class="container">
-      <h1 class="section-title">Playground</h1>
-      <p>[Experiments, sketches and side projects. A place for work that's fun but not a full case study.]</p>
+      <h1 class="section-title" data-split>Playground</h1>
+      <p data-reveal style="--d: 350ms">[Experiments, sketches and side projects. A place for work that's fun but not a full case study.]</p>
     </div>
   </section>
 
@@ -40,8 +56,8 @@
     <div class="container">
       <!-- Reuse the card markup from index.html here when you have pieces to add -->
       <div class="grid">
-        <div class="placeholder-img">Coming soon</div>
-        <div class="placeholder-img">Coming soon</div>
+        <div class="placeholder-img" data-reveal="left">Coming soon</div>
+        <div class="placeholder-img" data-reveal="right" style="--d: 120ms">Coming soon</div>
       </div>
     </div>
   </section>

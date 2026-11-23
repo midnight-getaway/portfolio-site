@@ -5,10 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Motivated Avoidance Study | Keady Van Zandt</title>
 <meta name="description" content="Why people skip the chatbot even when they can use it. A case study by Keady Van Zandt.">
-<script>document.documentElement.classList.add("js");</script>
+<script>
+  /* Runs before the page appears. Turns on animations, and if you arrived
+     through a bubble, covers the page so the bubble can pop. Keep this on every page. */
+  (function (d) {
+    d.classList.add("js");
+    try {
+      var c = sessionStorage.getItem("kv-bubble");
+      if (c && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        d.classList.add("is-arriving");
+        d.style.setProperty("--arrive", "var(--" + c + ")");
+      } else if (c) { sessionStorage.removeItem("kv-bubble"); }
+    } catch (e) {}
+  })(document.documentElement);
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:opsz,wght@9..40,400;9..40,700&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 <script src="js/main.js" defer></script>
 </head>
@@ -19,7 +32,10 @@
 <!-- ===== HEADER ===== -->
 <header class="site-header">
   <div class="container">
-    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">KV</span> Keady Van Zandt</a>
+    <a class="brand" href="index.html">
+      <span class="brand-photo"><img src="images/headshot-web.jpg" alt="" width="42" height="42"></span>
+      Keady Van Zandt
+    </a>
     <nav class="site-nav" aria-label="Main">
       <a href="index.html#work" aria-current="page">Work</a>
       <a href="playground.html">Playground</a>
@@ -29,73 +45,74 @@
   </div>
 </header>
 
-<!-- data-color sets this page's gumball color -->
-<main id="main" class="case" data-color="lime">
+<!-- data-color sets this page's gumball color (bubblegum, blueberry, mint, grape, sky, cotton) -->
+<main id="main" class="case" data-color="mint">
   <div class="container narrow">
 
-    <a class="back-link" href="index.html#work"><span aria-hidden="true">←</span> All work</a>
+    <a class="back-link" href="index.html#work" data-reveal="left"><span class="arrow" aria-hidden="true">←</span> All work</a>
 
-    <h1 class="case-title"><span class="card-ball" aria-hidden="true"></span>Motivated Avoidance Study</h1>
-    <p class="case-sub">Why people skip the chatbot even when they can use it</p>
+    <h1 class="case-title"><span class="card-ball" aria-hidden="true"></span><span data-split>Motivated Avoidance Study</span></h1>
+    <p class="case-sub" data-reveal style="--d: 250ms">Why people skip the chatbot even when they can use it</p>
 
     <dl class="facts">
-      <div class="fact"><dt>Role</dt><dd>[Your role]</dd></div>
-      <div class="fact"><dt>Timeline</dt><dd>[Months / year]</dd></div>
-      <div class="fact"><dt>Tools</dt><dd>[Survey tool · analysis]</dd></div>
+      <div class="fact" data-reveal style="--d: 350ms"><dt>Role</dt><dd>[Your role]</dd></div>
+      <div class="fact" data-reveal style="--d: 450ms"><dt>Timeline</dt><dd>[Months / year]</dd></div>
+      <div class="fact" data-reveal style="--d: 550ms"><dt>Tools</dt><dd>[Survey tool · analysis]</dd></div>
     </dl>
 
-    <figure class="case-hero">
+    <figure class="case-hero" data-reveal="scale" style="--d: 500ms">
       <!-- Swap this placeholder for your image, for example:
            <img src="images/motivated-avoidance-hero.jpg" alt="Describe what the screenshot shows"> -->
       <div class="placeholder-img">Hero image / project screenshot</div>
     </figure>
 
-    <section class="case-section">
+    <section class="case-section" data-reveal>
       <h2>Problem</h2>
       <p>[What was broken or missing, and who did it affect? Lead with the result in one sentence, then add the context.]</p>
     </section>
 
-    <section class="case-section">
+    <section class="case-section" data-reveal>
       <h2>Research</h2>
       <p>[What you did to understand the people involved: interviews, surveys, data, observation. What did you learn?]</p>
     </section>
 
     <section class="case-section with-aside">
-      <div>
+      <div data-reveal>
         <h2>Design decisions</h2>
         <p>[The two or three key choices you made and why. Connect each one back to what you learned in research.]</p>
       </div>
-      <aside class="callout">
+      <aside class="callout" data-reveal="right" style="--d: 150ms">
         <h3>100 Things principle</h3>
         <p>[Name the principle that guided this decision and explain in a sentence how you applied it.]</p>
       </aside>
     </section>
 
     <section class="case-section">
-      <h2>Results</h2>
+      <h2 data-reveal>Results</h2>
+      <!-- Numbers like "~1,000" count up when they scroll into view -->
       <div class="stats">
-        <div class="stat"><span class="stat-num">3</span><span class="stat-label">automation experiences studied</span></div>
-        <div class="stat"><span class="stat-num">XX%</span><span class="stat-label">[metric label]</span></div>
-        <div class="stat"><span class="stat-num">XX hrs</span><span class="stat-label">[metric label]</span></div>
+        <div class="stat" data-reveal style="--d: 0ms"><span class="stat-num">3</span><span class="stat-label">automation experiences studied</span></div>
+        <div class="stat" data-reveal style="--d: 120ms"><span class="stat-num">XX%</span><span class="stat-label">[metric label]</span></div>
+        <div class="stat" data-reveal style="--d: 240ms"><span class="stat-num">XX hrs</span><span class="stat-label">[metric label]</span></div>
       </div>
     </section>
 
     <section class="case-section">
-      <h2>Final design</h2>
+      <h2 data-reveal>Final design</h2>
       <div class="gallery">
         <!-- Swap each placeholder for <img src="images/motivated-avoidance-1.jpg" alt="..."> -->
-        <div class="placeholder-img">Final design image 1</div>
-        <div class="placeholder-img">Final design image 2</div>
+        <div class="placeholder-img" data-reveal="left">Final design image 1</div>
+        <div class="placeholder-img" data-reveal="right">Final design image 2</div>
       </div>
     </section>
 
-    <section class="case-section">
+    <section class="case-section" data-reveal>
       <h2>What I'd do next</h2>
       <p>[What you would test, change or measure if you had more time.]</p>
     </section>
 
-    <nav class="next-project" aria-label="Next project">
-      <a href="case-skylight.html" data-bubble data-color="blueberry">Next project: Skylight <span aria-hidden="true">→</span></a>
+    <nav class="next-project" aria-label="Next project" data-reveal>
+      <a href="case-skylight.html" data-bubble data-color="blueberry">Next project: Skylight <span class="arrow" aria-hidden="true">→</span></a>
     </nav>
 
   </div>

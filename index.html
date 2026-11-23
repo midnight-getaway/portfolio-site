@@ -5,10 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Keady Van Zandt | Product, UX Research &amp; Project Management</title>
 <meta name="description" content="Portfolio of Keady Van Zandt. Design that starts with people. And ends a little sweeter.">
-<script>document.documentElement.classList.add("js");</script>
+<script>
+  /* Runs before the page appears. Turns on animations, and if you arrived
+     through a bubble, covers the page so the bubble can pop. Keep this on every page. */
+  (function (d) {
+    d.classList.add("js");
+    try {
+      var c = sessionStorage.getItem("kv-bubble");
+      if (c && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        d.classList.add("is-arriving");
+        d.style.setProperty("--arrive", "var(--" + c + ")");
+      } else if (c) { sessionStorage.removeItem("kv-bubble"); }
+    } catch (e) {}
+  })(document.documentElement);
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:opsz,wght@9..40,400;9..40,700&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 <script src="js/main.js" defer></script>
 </head>
@@ -19,7 +32,10 @@
 <!-- ===== HEADER ===== -->
 <header class="site-header">
   <div class="container">
-    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">KV</span> Keady Van Zandt</a>
+    <a class="brand" href="index.html">
+      <span class="brand-photo"><img src="images/headshot-web.jpg" alt="" width="42" height="42"></span>
+      Keady Van Zandt
+    </a>
     <nav class="site-nav" aria-label="Main">
       <a href="#work">Work</a>
       <a href="playground.html">Playground</a>
@@ -34,33 +50,45 @@
 
   <!-- ===== HERO ===== -->
   <section class="hero" aria-labelledby="hero-title">
+    <div class="blobs" aria-hidden="true">
+      <span class="blob blob-1"></span>
+      <span class="blob blob-2"></span>
+      <span class="blob blob-3"></span>
+    </div>
+
     <div class="container">
 
       <div class="hero-text">
-        <h1 id="hero-title">Hi, I'm Keady.</h1>
-        <p class="tagline">Design that starts with people.<br>And ends a little sweeter.</p>
-        <p class="roles">Product · UX research · Project management</p>
-        <p class="intro">[Write one or two sentences about who you are and the problems you like to solve. Keep it short so people get the point in a few seconds.]</p>
-        <div class="hero-actions">
+        <!-- data-split makes each letter bounce in -->
+        <h1 id="hero-title" data-split>Hi, I'm Keady.</h1>
+        <p class="tagline" data-reveal style="--d: 550ms">Design that starts with people.<br>And ends <em>a little sweeter.</em></p>
+        <ul class="roles" data-reveal style="--d: 700ms" aria-label="What I do">
+          <li data-color="bubblegum">Product</li>
+          <li data-color="mint">UX research</li>
+          <li data-color="grape">Project management</li>
+        </ul>
+        <p class="intro" data-reveal style="--d: 820ms">[Write one or two sentences about who you are and the problems you like to solve. Keep it short so people get the point in a few seconds.]</p>
+        <div class="hero-actions" data-reveal style="--d: 950ms">
           <a class="btn" id="see-work" href="#work">See my work</a>
           <a class="btn btn-outline" href="assets/Resume.pdf" target="_blank" rel="noopener">Resume</a>
         </div>
       </div>
 
       <!-- Gumball machine. The gumballs inside the globe are added by js/main.js -->
-      <div class="machine">
-        <svg viewBox="0 0 300 480" role="img" aria-label="A gumball machine full of colorful gumballs">
+      <div class="machine" data-reveal="drop" style="--d: 250ms">
+        <svg viewBox="0 0 300 480" role="img" aria-label="A pink gumball machine full of colorful gumballs">
           <circle class="globe-glass" cx="150" cy="150" r="140"/>
           <g id="globe-balls"></g>
           <path class="globe-shine" d="M25 105 A134 134 0 0 1 104 24"/>
           <rect class="machine-neck" x="122" y="284" width="56" height="20" rx="4"/>
           <rect class="machine-body" x="70" y="300" width="160" height="150" rx="18"/>
+          <rect class="body-shine" x="84" y="312" width="10" height="70" rx="5"/>
           <rect class="chute" x="112" y="398" width="76" height="36" rx="6"/>
           <rect class="machine-base" x="45" y="448" width="210" height="26" rx="8"/>
         </svg>
 
         <!-- The knob is a real button: works with Tab + Enter -->
-        <button class="knob" id="knob" type="button" aria-label="Turn the knob to see my work" aria-controls="tray"></button>
+        <button class="knob is-idle" id="knob" type="button" aria-label="Turn the knob to see my work" aria-controls="tray"></button>
 
         <p class="turn-hint" aria-hidden="true">
           <svg viewBox="0 0 80 50"><path d="M74 46 C62 14 34 6 8 18"/><path d="M8 18 L19 13 M8 18 L15 28"/></svg>
@@ -75,30 +103,31 @@
   <!-- ===== SELECTED WORK ===== -->
   <section class="work" id="work" aria-labelledby="work-title">
     <div class="container">
-      <h2 class="section-title" id="work-title">Selected work</h2>
-      <p class="flavor-label" id="flavor-label">Pick a flavor.</p>
+      <h2 class="section-title" id="work-title" data-reveal>Selected work</h2>
+      <p class="flavor-label" id="flavor-label" data-reveal style="--d: 100ms">Pick a flavor.</p>
 
       <!-- data-filter must match the words in each card's data-flavors -->
       <div class="chips" id="flavor-chips" role="group" aria-labelledby="flavor-label">
         <button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>
-        <button class="chip" type="button" data-filter="product" data-color="cherry" aria-pressed="false">Product</button>
+        <button class="chip" type="button" data-filter="product" data-color="bubblegum" aria-pressed="false">Product</button>
         <button class="chip" type="button" data-filter="design" data-color="blueberry" aria-pressed="false">UX Design</button>
-        <button class="chip" type="button" data-filter="research" data-color="lime" aria-pressed="false">UX Research</button>
-        <button class="chip" type="button" data-filter="pm" data-color="tangerine" aria-pressed="false">Project Mgmt</button>
+        <button class="chip" type="button" data-filter="research" data-color="mint" aria-pressed="false">UX Research</button>
+        <button class="chip" type="button" data-filter="pm" data-color="grape" aria-pressed="false">Project Mgmt</button>
       </div>
 
       <p class="start-with" id="start-with" aria-live="polite"></p>
 
+      <!-- Don't add data-reveal to the tray or cards: the gumballs need to know exactly where they are -->
       <div class="tray" id="tray">
         <p class="tray-empty">Case study cards land here after the knob is turned.</p>
 
         <div class="grid">
           <!--
             CARD TEMPLATE
-            data-color   = gumball color (cherry, blueberry, lime, tangerine, grape, lemon)
+            data-color   = gumball color (bubblegum, blueberry, mint, grape, sky, cotton)
             data-flavors = which filter chips show this card (product, design, research, pm), separated by spaces
           -->
-          <article class="card" data-color="tangerine" data-flavors="pm product">
+          <article class="card" data-color="grape" data-flavors="pm product">
             <div class="card-head">
               <span class="card-ball" aria-hidden="true"></span>
               <div>
@@ -108,10 +137,10 @@
             </div>
             <p class="card-headline">Getting nearly 1,000 agencies onto one ordering system</p>
             <p class="card-meta">~1,000 agencies · training · full grant cycle</p>
-            <a class="card-link" href="case-partner-platform.html" data-bubble>Read case study<span class="sr-only">: Partner Platform Rollout</span> <span aria-hidden="true">→</span></a>
+            <a class="card-link" href="case-partner-platform.html" data-bubble>Read case study<span class="sr-only">: Partner Platform Rollout</span> <span class="arrow" aria-hidden="true">→</span></a>
           </article>
 
-          <article class="card" data-color="cherry" data-flavors="product">
+          <article class="card" data-color="bubblegum" data-flavors="product">
             <div class="card-head">
               <span class="card-ball" aria-hidden="true"></span>
               <div>
@@ -121,10 +150,10 @@
             </div>
             <p class="card-headline">From CRM entry to dashboards leadership actually opens</p>
             <p class="card-meta">Donor retention · total raised · campaign progress</p>
-            <a class="card-link" href="case-crm-power-bi.html" data-bubble>Read case study<span class="sr-only">: CRM to Power BI Pipeline</span> <span aria-hidden="true">→</span></a>
+            <a class="card-link" href="case-crm-power-bi.html" data-bubble>Read case study<span class="sr-only">: CRM to Power BI Pipeline</span> <span class="arrow" aria-hidden="true">→</span></a>
           </article>
 
-          <article class="card" data-color="lime" data-flavors="research">
+          <article class="card" data-color="mint" data-flavors="research">
             <div class="card-head">
               <span class="card-ball" aria-hidden="true"></span>
               <div>
@@ -134,7 +163,7 @@
             </div>
             <p class="card-headline">Why people skip the chatbot even when they can use it</p>
             <p class="card-meta">3 automation experiences · survey design</p>
-            <a class="card-link" href="case-motivated-avoidance.html" data-bubble>Read case study<span class="sr-only">: Motivated Avoidance Study</span> <span aria-hidden="true">→</span></a>
+            <a class="card-link" href="case-motivated-avoidance.html" data-bubble>Read case study<span class="sr-only">: Motivated Avoidance Study</span> <span class="arrow" aria-hidden="true">→</span></a>
           </article>
 
           <article class="card" data-color="blueberry" data-flavors="design">
@@ -147,7 +176,7 @@
             </div>
             <p class="card-headline">An ERP that bends to the nonprofit, not the other way</p>
             <p class="card-meta">Conceptual model · AI agents</p>
-            <a class="card-link" href="case-skylight.html" data-bubble>Read case study<span class="sr-only">: Skylight</span> <span aria-hidden="true">→</span></a>
+            <a class="card-link" href="case-skylight.html" data-bubble>Read case study<span class="sr-only">: Skylight</span> <span class="arrow" aria-hidden="true">→</span></a>
           </article>
         </div>
       </div>
@@ -159,11 +188,13 @@
   <section class="contact" id="contact" aria-labelledby="contact-title">
     <div class="container contact-inner">
       <!-- Web-sized copy of images/Headshot.JPG (600x600) -->
-      <img class="headshot" src="images/headshot-web.jpg" alt="Keady Van Zandt smiling, in a pink top, against a light gray background" width="240" height="240">
+      <div class="headshot-wrap" data-reveal="scale">
+        <img class="headshot" src="images/headshot-web.jpg" alt="Keady Van Zandt smiling, in a pink top, against a light gray background" width="240" height="240">
+      </div>
       <div>
-        <h2 class="section-title" id="contact-title">Let's make something sweet.</h2>
-        <p>[One line inviting people to reach out: what you're looking for, or what you'd love to work on.]</p>
-        <div class="hero-actions">
+        <h2 class="section-title" id="contact-title" data-reveal style="--d: 150ms">Let's make something sweet.</h2>
+        <p data-reveal style="--d: 250ms">[One line inviting people to reach out: what you're looking for, or what you'd love to work on.]</p>
+        <div class="hero-actions" data-reveal style="--d: 350ms">
           <!-- Replace with your real email address and LinkedIn URL -->
           <a class="btn" href="mailto:your-email@example.com">Email me</a>
           <a class="btn btn-outline" href="https://www.linkedin.com/in/your-profile" target="_blank" rel="noopener">LinkedIn</a>
@@ -175,7 +206,7 @@
 </main>
 
 <footer class="site-footer">
-  <div class="container">© 2026 Keady Van Zandt</div>
+  <div class="container" data-reveal>© 2026 Keady Van Zandt</div>
 </footer>
 </body>
 </html>
