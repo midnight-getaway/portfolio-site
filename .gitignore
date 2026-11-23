@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# Dreamweaver's own files
+_notes/
+dwsync.xml
+*.LCK
+_compareTemp/
+
+# Original full-size headshot (7 MB). The site uses images/headshot-web.jpg
+images/Headshot.JPG
