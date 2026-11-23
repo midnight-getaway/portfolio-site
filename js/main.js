@@ -20,7 +20,7 @@
   var root = document.documentElement;
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   var canHover = window.matchMedia("(hover: hover)");
-  var COLORS = ["bubblegum", "blueberry", "mint", "grape", "sky", "cotton"];
+  var COLORS = ["orchid", "aqua", "lemon", "spring-green", "tangerine"];
   var SVG_NS = "http://www.w3.org/2000/svg";
   var arriving = root.classList.contains("is-arriving");
 
@@ -131,12 +131,19 @@
         }
 
         var ball = makeCircle(x, y, 17);
-        ball.style.fill = "var(--" + COLORS[(row * 7 + i * 3 + row * i) % COLORS.length] + ")";
-        var shine = makeCircle(x - 6, y - 6, 4.5);
-        shine.setAttribute("class", "gumball-shine");
+        // Color by grid position so touching gumballs never match:
+        // neighbors differ by 2 (same row) or by 1 and 3 (rows above/below).
+        var col = Math.round((x - 36) / 19);
+        ball.style.fill = "var(--" + COLORS[(col + row * 3) % COLORS.length] + ")";
+        // Gloss and shade overlays (gradients defined in index.html)
+        var shade = makeCircle(x, y, 17);
+        shade.setAttribute("fill", "url(#gb-shade)");
+        var gloss = makeCircle(x, y, 17);
+        gloss.setAttribute("fill", "url(#gb-gloss)");
 
         g.appendChild(ball);
-        g.appendChild(shine);
+        g.appendChild(shade);
+        g.appendChild(gloss);
         globe.appendChild(g);
       }
     });
@@ -164,14 +171,35 @@
   if (globe) { fillGlobe(!reduceMotion.matches, 650); }
 
 
-  /* ---------- 6. Turn the knob ---------- */
+  /* ---------- 6. Project cards + the knob ---------- */
+  // The cards are always there. They slide in when the work section scrolls
+  // into view. Turning the knob is a bonus: gumballs roll into each card.
   var machine = $(".machine");
   var knob = document.getElementById("knob");
   var tray = document.getElementById("tray");
   var chipsWrap = document.getElementById("flavor-chips");
   var startWith = document.getElementById("start-with");
+  var filterStatus = document.getElementById("filter-status");
+  var chips = chipsWrap ? $$(".chip", chipsWrap) : [];
+  chips.forEach(function (chip, i) { chip.style.setProperty("--i", i); });
+
+  // How each filter is said in the status line ("Showing 1 project in UX research")
+  var FILTER_NAMES = {
+    product: "Product",
+    design: "UX design",
+    research: "UX research",
+    pm: "project management"
+  };
+  var filterRun = 0;   // lets a new click cancel an animation still running
   var cards = tray ? $$(".card", tray) : [];
   var currentFlavor = "all";
+
+  // Once a card has slid in, mark it so the slide-in never replays
+  cards.forEach(function (card) {
+    card.addEventListener("animationend", function (e) {
+      if (e.animationName === "card-in") { card.classList.add("is-settled"); }
+    });
+  });
   var turns = 0;
   var busy = false;
 
@@ -182,17 +210,39 @@
     ball.classList.add("pop");
   }
 
-  // Show everything right away (no animation)
-  function revealAll() {
-    if (!tray) { return; }
-    tray.classList.add("is-filled");
-    cards.forEach(function (card) { card.classList.add("is-in"); });
-    if (chipsWrap) { chipsWrap.classList.add("is-ready"); }
-    applyFilter(currentFlavor);
-    setStore("kv-revealed", "1");
+  function hitCard(card) {
+    card.classList.remove("is-hit");
+    void card.offsetWidth;
+    card.classList.add("is-hit");
   }
 
-  function dropGumballs() {
+  // Slide the cards and filter chips in
+  var cardsShown = false;
+  function showCards() {
+    if (!tray || cardsShown) { return; }
+    cardsShown = true;
+    cards.forEach(function (card, i) {
+      card.style.setProperty("--i", i);
+      card.classList.add("is-in");
+    });
+    if (chipsWrap) { chipsWrap.classList.add("is-ready"); }
+    applyFilter(currentFlavor);
+  }
+
+  // Where an element sits on the page, ignoring hover tilts and slide-ins
+  function pagePosition(el) {
+    var x = 0, y = 0, node = el;
+    while (node) {
+      x += node.offsetLeft;
+      y += node.offsetTop;
+      node = node.offsetParent;
+    }
+    return { x: x + el.offsetWidth / 2, y: y + el.offsetHeight / 2, width: el.offsetWidth };
+  }
+
+  // revealOnLand: cards stay hidden until their gumball lands (the automatic
+  // first turn). Otherwise the cards are already showing and just bounce.
+  function dropGumballs(revealOnLand) {
     var svgBox = $("svg", machine).getBoundingClientRect();
     var scale = svgBox.width / 300;                         // SVG viewBox is 300 wide
     var startX = svgBox.left + window.scrollX + 150 * scale;
@@ -202,21 +252,24 @@
 
     machine.classList.add("is-shaking");
     setTimeout(function () { machine.classList.remove("is-shaking"); }, 600);
-    var left = takeFromGlobe(cards.length);
+    var targets = cards.filter(function (card) { return !card.hidden; });
+    var left = takeFromGlobe(targets.length);
 
-    // Follow the gumballs down to the work section
-    setTimeout(function () {
-      document.getElementById("work").scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 450);
+    // When someone turns the knob by hand, follow the gumballs down
+    if (!revealOnLand) {
+      setTimeout(function () {
+        document.getElementById("work").scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 450);
+    }
 
     function at(x, y, sx, sy) {
       return "translate(" + (x - size / 2) + "px," + (y - size / 2) + "px) scale(" + sx + "," + (sy || sx) + ")";
     }
 
-    cards.forEach(function (card, i) {
-      var target = $(".card-ball", card).getBoundingClientRect();
-      var tx = target.left + window.scrollX + target.width / 2;
-      var ty = target.top + window.scrollY + target.height / 2;
+    targets.forEach(function (card, i) {
+      var target = pagePosition($(".card-ball", card));
+      var tx = target.x;
+      var ty = target.y;
       var dx = tx - startX;
       var dy = ty - startY;
       var s = target.width / size;
@@ -226,6 +279,7 @@
       ball.setAttribute("aria-hidden", "true");
       ball.style.width = size + "px";
       ball.style.height = size + "px";
+      ball.style.setProperty("--gb", size + "px");
       ball.style.setProperty("--flavor", "var(--" + card.getAttribute("data-color") + ")");
       document.body.appendChild(ball);
 
@@ -238,20 +292,22 @@
         { transform: at(tx, ty, s * 1.15, s * 0.85), offset: 0.93 },   // squish on landing
         { transform: at(tx, ty, s) }
       ], {
-        duration: 1600,
-        delay: 250 + i * 220,
+        duration: revealOnLand ? 1150 : 1600,
+        delay: revealOnLand ? 150 + i * 160 : 250 + i * 220,
         easing: "cubic-bezier(.45, 0, .55, 1)",
         fill: "both"
       });
 
       flight.onfinish = function () {
         ball.remove();
-        tray.classList.add("is-filled");
-        card.classList.add("is-in");
+        if (revealOnLand) {
+          card.classList.add("is-in");
+        } else {
+          hitCard(card);
+        }
         popBall(card);
         landed++;
-        if (landed === cards.length) {
-          revealAll();
+        if (landed === targets.length) {
           busy = false;
           if (left < 8) {
             setTimeout(function () { fillGlobe(true, 0); }, 400);
@@ -261,60 +317,167 @@
     });
   }
 
+  function turnKnob() {
+    knob.classList.remove("is-idle");
+    turns++;
+    knob.style.rotate = turns * 360 + "deg";
+  }
+
+  // The first time the cards scroll into view, the knob turns by itself and
+  // each card appears as its gumball lands. Once per visit.
+  function autoTurn() {
+    if (cardsShown || busy) { return; }
+    cardsShown = true;
+    busy = true;
+    setStore("kv-dropped", "1");
+    turnKnob();
+    if (chipsWrap) { chipsWrap.classList.add("is-ready"); }
+    applyFilter(currentFlavor);
+    dropGumballs(true);
+
+    // Safety net: never leave the work hidden if an animation stalls
+    setTimeout(function () {
+      cards.forEach(function (card) { card.classList.add("is-in"); });
+      $$(".flying-ball").forEach(function (b) { b.remove(); });
+      busy = false;
+    }, 3000);
+  }
+
   if (knob && tray) {
     knob.addEventListener("click", function () {
       if (busy) { return; }
-      knob.classList.remove("is-idle");
-      turns++;
-      knob.style.rotate = turns * 360 + "deg";
-
+      turnKnob();
+      showCards();
       if (reduceMotion.matches) {
-        revealAll();
         document.getElementById("work").scrollIntoView();
         return;
       }
       busy = true;
-      dropGumballs();
+      dropGumballs(false);
     });
+  }
 
-    // "See my work" skips the animation
-    var seeWork = document.getElementById("see-work");
-    if (seeWork) { seeWork.addEventListener("click", revealAll); }
-
-    // Coming back from a case study, or arriving at index.html#work
-    if (window.location.hash === "#work" || getStore("kv-revealed")) {
-      revealAll();
+  if (tray) {
+    var played = getStore("kv-dropped");
+    if (reduceMotion.matches || !("IntersectionObserver" in window) || !knob) {
+      showCards();
+    } else {
+      var cardWatcher = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting) {
+          cardWatcher.disconnect();
+          if (played) {
+            showCards();
+          } else {
+            // Let the machine finish dropping in and filling up first
+            setTimeout(autoTurn, Math.max(0, 2000 - performance.now()));
+          }
+        }
+      }, { threshold: 0.2 });
+      cardWatcher.observe(tray);
     }
   }
 
 
   /* ---------- 7. "Pick a flavor" filter ---------- */
-  var chips = chipsWrap ? $$(".chip", chipsWrap) : [];
-  chips.forEach(function (chip, i) { chip.style.setProperty("--i", i); });
 
-  function applyFilter(flavor) {
-    var first = null;
-    currentFlavor = flavor;
+  function matches(card, flavor) {
+    return flavor === "all" || card.getAttribute("data-flavors").split(" ").indexOf(flavor) !== -1;
+  }
 
-    cards.forEach(function (card) {
-      var flavors = card.getAttribute("data-flavors").split(" ");
-      var match = flavor === "all" || flavors.indexOf(flavor) !== -1;
-      card.classList.toggle("is-dimmed", !match);
-      if (match && !first) { first = card; }
-    });
-
-    chips.forEach(function (chip) {
-      chip.setAttribute("aria-pressed", chip.getAttribute("data-filter") === flavor ? "true" : "false");
-    });
-
+  function updateFilterText(flavor, shown) {
+    var n = shown.length;
+    if (filterStatus) {
+      var noun = n === 1 ? "project" : "projects";
+      filterStatus.textContent = flavor === "all"
+        ? "Showing all " + n + " " + noun
+        : "Showing " + n + " " + noun + " in " + FILTER_NAMES[flavor];
+    }
     if (startWith) {
-      startWith.textContent = first
-        ? "Start with: " + $(".card-title", first).textContent
+      startWith.textContent = shown.length
+        ? "Start with: " + $(".card-title", shown[0]).textContent
         : "Nothing in that flavor yet. Try another!";
       startWith.classList.remove("swap");
       void startWith.offsetWidth;
       startWith.classList.add("swap");
     }
+  }
+
+  // Hide cards that don't match (fade + slight shrink, then the hidden
+  // attribute so they leave the tab order and screen readers), show the ones
+  // that do, and slide the remaining cards smoothly into their new spots.
+  function applyFilter(flavor) {
+    currentFlavor = flavor;
+    var run = ++filterRun;
+
+    chips.forEach(function (chip) {
+      chip.setAttribute("aria-pressed", chip.getAttribute("data-filter") === flavor ? "true" : "false");
+    });
+
+    // Stop any animation from an earlier click
+    cards.forEach(function (card) {
+      (card.filterAnims || []).forEach(function (a) { a.cancel(); });
+      card.filterAnims = [];
+    });
+
+    var toHide = cards.filter(function (c) { return !c.hidden && !matches(c, flavor); });
+    var toShow = cards.filter(function (c) { return c.hidden && matches(c, flavor); });
+    var staying = cards.filter(function (c) { return !c.hidden && matches(c, flavor); });
+    var shown = cards.filter(function (c) { return matches(c, flavor); });
+    updateFilterText(flavor, shown);
+
+    var animate = cardsShown && !reduceMotion.matches && (toHide.length || toShow.length);
+    if (!animate) {
+      toHide.forEach(function (c) { c.hidden = true; });
+      toShow.forEach(function (c) { c.hidden = false; });
+      return;
+    }
+
+    var SPEED = 200;
+    var EASE = "cubic-bezier(.2, .7, .3, 1)";
+    function track(card, anim) { card.filterAnims.push(anim); return anim; }
+
+    // Where the staying cards are now (before anything moves)
+    var before = staying.map(function (c) { return c.getBoundingClientRect(); });
+
+    function reflow() {
+      if (run !== filterRun) { return; }
+      toHide.forEach(function (c) { c.hidden = true; });
+      toShow.forEach(function (c) { c.hidden = false; });
+
+      // Slide staying cards from their old spot to their new one
+      staying.forEach(function (c, k) {
+        var after = c.getBoundingClientRect();
+        var dx = before[k].left - after.left;
+        var dy = before[k].top - after.top;
+        if (dx || dy) {
+          track(c, c.animate([
+            { transform: "translate(" + dx + "px," + dy + "px)" },
+            { transform: "none" }
+          ], { duration: SPEED, easing: EASE }));
+        }
+      });
+
+      // Fade the newly matching cards in
+      toShow.forEach(function (c) {
+        track(c, c.animate([
+          { opacity: 0, transform: "scale(.96)" },
+          { opacity: 1, transform: "none" }
+        ], { duration: SPEED, easing: EASE }));
+      });
+    }
+
+    if (!toHide.length) { reflow(); return; }
+
+    // Fade the non-matching cards out first, then hide them and reflow.
+    // A timer (not the animation's finish event) moves things along, so the
+    // cards always end up hidden even if the browser skips drawing frames.
+    toHide.forEach(function (c) {
+      track(c, c.animate([
+        { opacity: 1, transform: "none" },
+        { opacity: 0, transform: "scale(.96)" }
+      ], { duration: SPEED, easing: EASE, fill: "forwards" }));
+    });
+    setTimeout(reflow, SPEED);
   }
 
   chips.forEach(function (chip) {
@@ -383,7 +546,7 @@
 
   function blowBubble(link, e) {
     var colorEl = link.closest("[data-color]");
-    var color = colorEl ? colorEl.getAttribute("data-color") : "bubblegum";
+    var color = colorEl ? colorEl.getAttribute("data-color") : "orchid";
     var card = link.closest(".card");
     var origin = card ? $(".card-ball", card) : null;
     var r = origin
@@ -421,6 +584,14 @@
       return frame;
     }
 
+    // Real bubbles are never perfectly round: wobble the outline as it grows
+    bubble.animate([
+      { borderRadius: "50%" },
+      { borderRadius: "47% 53% 51% 49% / 53% 47% 52% 48%" },
+      { borderRadius: "52% 48% 47% 53% / 48% 53% 48% 52%" },
+      { borderRadius: "49% 51% 52% 48% / 51% 49% 50% 50%" }
+    ], { duration: 950, easing: "ease-in-out", fill: "forwards" });
+
     // Two quick breaths with a small wobble, then it swells to fill the screen.
     // Kept under a second so it never feels like a wait.
     bubble.animate([
@@ -444,55 +615,23 @@
     $$(".card.is-blowing").forEach(function (c) { c.classList.remove("is-blowing"); });
   });
 
-  // Arriving on the new page: the film thins for a moment, tears open from
-  // one spot, snaps back and fades. A few small crumbs of gum fall away.
+  // Arriving on the new page: the bubble stretches thin for a split second,
+  // tears open from one spot, and the film snaps back out of the way.
   function popBubble(colorName) {
-    var color = "var(--" + colorName + ")";
     var cover = document.createElement("div");
     cover.className = "pop-cover";
     cover.setAttribute("aria-hidden", "true");
-    cover.style.setProperty("--flavor", color);
+    cover.style.setProperty("--flavor", "var(--" + colorName + ")");
     document.body.appendChild(cover);
     root.classList.remove("is-arriving");   // the real cover takes over from the CSS one
 
-    setTimeout(function () { cover.classList.add("is-straining"); }, 40);
-
-    setTimeout(function () {
-      cover.classList.add("is-popping");
-
-      // Tear point matches --tx / --ty on .pop-cover in styles.css
-      var x = window.innerWidth * 0.62;
-      var y = window.innerHeight * 0.36;
-      for (var i = 0; i < 7; i++) {
-        var crumb = document.createElement("span");
-        crumb.className = "crumb";
-        crumb.setAttribute("aria-hidden", "true");
-        crumb.style.setProperty("--flavor", color);
-        var sz = rand(5, 12);
-        crumb.style.width = sz + "px";
-        crumb.style.height = sz * rand(0.6, 1) + "px";
-        crumb.style.left = x + "px";
-        crumb.style.top = y + "px";
-        document.body.appendChild(crumb);
-
-        var angle = rand(0, Math.PI * 2);
-        var dist = rand(30, 110);
-        var outX = Math.cos(angle) * dist;
-        var outY = Math.sin(angle) * dist * 0.6;
-        crumb.animate([
-          { transform: "translate(-50%,-50%) translate(0,0) rotate(0)", opacity: 0.9 },
-          { transform: "translate(-50%,-50%) translate(" + outX * 0.7 + "px," + (outY * 0.7 - 10) + "px) rotate(" + rand(-90, 90) + "deg)", opacity: 0.8, offset: 0.35 },
-          { transform: "translate(-50%,-50%) translate(" + outX + "px," + (outY + rand(60, 140)) + "px) rotate(" + rand(-200, 200) + "deg)", opacity: 0 }
-        ], { duration: rand(500, 750), easing: "cubic-bezier(.3, .6, .6, 1)", fill: "forwards" })
-          .onfinish = (function (c) { return function () { c.remove(); }; })(crumb);
-      }
-
-      setTimeout(function () { cover.remove(); }, 480);
-    }, 200);
+    setTimeout(function () { cover.classList.add("is-straining"); }, 30);
+    setTimeout(function () { cover.classList.add("is-popping"); }, 170);
+    setTimeout(function () { cover.remove(); }, 560);
   }
 
   if (arriving) {
-    var arriveColor = getStore("kv-bubble") || "bubblegum";
+    var arriveColor = getStore("kv-bubble") || "orchid";
     removeStore("kv-bubble");
     popBubble(arriveColor);
     setTimeout(startReveal, 350);

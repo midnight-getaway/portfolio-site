@@ -19,34 +19,58 @@
 
 /* ---------- 1. Variables ---------- */
 :root {
-  /* Gumball flavors. Change these to re-color the whole site. */
-  --bubblegum: #ff5fa2;  /* Product */
-  --blueberry: #5b7cfa;  /* UX Design */
-  --mint: #2ec4a6;       /* UX Research */
-  --grape: #9d6bff;      /* Project Mgmt */
-  --sky: #4cc3f2;
-  --cotton: #ffc2e0;
+  /* ===== PALETTE TOKENS: change colors here and only here ===== */
+  --grape:          #5E139A;   /* text, machine body, primary buttons, links */
+  --grape-deep:     #430D6E;   /* machine base, button shadows and borders, hover states */
+  --orchid:         #EC77E4;   /* gumball accent (decorative only) */
+  --lemon:          #F8E14D;   /* gumball accent (decorative only) */
+  --aqua:           #6BDFE5;   /* gumball accent (decorative only) */
+  --spring-green:   #64D86A;   /* gumball accent (decorative only) */
+  --tangerine:      #EC6B2D;   /* gumball accent (decorative only) */
+  --lavender-white: #FBF8FF;   /* page background */
+  --lilac:          #F1E7FA;   /* cards and tag pills */
+  --white:          #FFFFFF;   /* button text, gloss highlights, coin slot */
+
+  /* ===== ROLES: what each token is used for (built from the palette above) ===== */
+  --ink: var(--grape);                                                     /* all text */
+  --ink-soft: color-mix(in srgb, var(--grape) 85%, var(--lavender-white)); /* secondary text: 6.15:1 on lilac */
+  --muted: var(--ink-soft);
+  --line: color-mix(in srgb, var(--grape) 14%, var(--lavender-white));     /* dividers */
+  --paper: var(--lavender-white);                                          /* page background */
+  --paper-2: var(--lilac);                                                 /* cards, sections */
+  --primary: var(--grape);
+  --on-primary: var(--white);
+  --primary-dark: var(--grape-deep);
+  --shade: color-mix(in srgb, var(--grape-deep) 28%, transparent);         /* shadows */
 
   /* Gumball machine */
-  --machine: #ff7ab8;
-  --machine-dark: #e2559a;
-  --glass: #f6f4ff;
+  --machine: var(--grape);
+  --machine-dark: var(--grape-deep);
+  --machine-line: var(--grape-deep);
+  --glass: var(--white);
 
-  /* Neutrals (cool, slightly lavender) */
-  --ink: #23213a;
-  --ink-soft: #5d5a78;
-  --muted: #8d8aa6;
-  --line: #e2e0ee;
-  --paper: #ffffff;
-  --paper-2: #f5f4fb;
+  /* Project categories: each gets its own gumball color */
+  --cat-product: var(--tangerine);
+  --cat-design: var(--aqua);
+  --cat-research: var(--spring-green);
+  --cat-pm: var(--orchid);
 
   --radius: 18px;
   --max: 1200px;
   --header-h: 80px;
 
-  --font: "DM Sans", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
-  --display: "Fredoka", "DM Sans", system-ui, sans-serif;  /* headings */
-  --hand: "Caveat", "Bradley Hand", cursive;
+  /* ===== FONT TOKENS (loaded in each page's <head> from Google Fonts) ===== */
+  --font-display: "Fredoka", system-ui, sans-serif;  /* h1-h3, name, nav, buttons */
+  --font-body: "Nunito", system-ui, sans-serif;      /* paragraphs, lists, captions, fields */
+
+  /* Type scale: headings shrink smoothly on small screens */
+  --fs-h1: clamp(2.25rem, 1.6rem + 2.6vw, 3rem);
+  --fs-h2: clamp(1.75rem, 1.4rem + 1.5vw, 2.25rem);
+  --fs-h3: clamp(1.25rem, 1.15rem + .5vw, 1.5rem);
+  --fs-body: clamp(1rem, .96rem + .2vw, 1.125rem);
+  --fs-small: .9375rem;
+  --lh-body: 1.6;
+  --ls-display: .015em;   /* slightly loose, soft candy look */
 
   /* Motion */
   --ease-out: cubic-bezier(.16, 1, .3, 1);
@@ -54,24 +78,61 @@
 }
 
 /* Any element with data-color="..." gets that flavor as --flavor */
-[data-color="bubblegum"] { --flavor: var(--bubblegum); }
-[data-color="blueberry"] { --flavor: var(--blueberry); }
-[data-color="mint"]      { --flavor: var(--mint); }
-[data-color="grape"]     { --flavor: var(--grape); }
-[data-color="sky"]       { --flavor: var(--sky); }
-[data-color="cotton"]    { --flavor: var(--cotton); }
+[data-color="orchid"]       { --flavor: var(--orchid); }
+[data-color="lemon"]        { --flavor: var(--lemon); }
+[data-color="aqua"]         { --flavor: var(--aqua); }
+[data-color="spring-green"] { --flavor: var(--spring-green); }
+[data-color="tangerine"]    { --flavor: var(--tangerine); }
+
+
+/* ---------- Reusable gumball ----------
+   A shiny ball: soft white gloss in the upper left, gentle shade at the
+   bottom right. Use class="gumball" (set --flavor for the color and --gb
+   for the size), or add a selector here. */
+.gumball,
+.card-ball,
+.flying-ball,
+.chip::before,
+.roles li::before,
+.case-section ul li::before {
+  --gb: 16px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 28%,
+      color-mix(in srgb, var(--white) 95%, transparent) 0,
+      color-mix(in srgb, var(--white) 40%, transparent) 18%,
+      transparent 46%),
+    var(--flavor, var(--orchid));
+  box-shadow: inset calc(var(--gb) * -.1) calc(var(--gb) * -.13) calc(var(--gb) * .22) var(--shade);
+}
+.gumball { display: inline-block; width: var(--gb); height: var(--gb); vertical-align: middle; }
+
+/* Gumball bullet points for lists inside case studies */
+.case-section ul { list-style: none; padding: 0; margin: 0 0 1em; }
+.case-section ul li { position: relative; padding-left: 1.7em; margin-bottom: .5em; }
+.case-section ul li::before {
+  --gb: 14px;
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .3em;
+  width: var(--gb);
+  height: var(--gb);
+}
+/* One accent per section: case study bullets use the page's category color,
+   inherited from data-color on <main>. */
 
 
 /* ---------- 2. Base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: clip; }   /* no sideways scrolling on phones */
 
 body {
   margin: 0;
-  font-family: var(--font);
-  font-size: 1.0625rem;
-  line-height: 1.55;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
   color: var(--ink);
   background: var(--paper);
   -webkit-font-smoothing: antialiased;
@@ -82,11 +143,17 @@ img { display: block; max-width: 100%; height: auto; }
 a { color: inherit; }
 h1, h2, h3 {
   margin: 0;
-  font-family: var(--display);
+  font-family: var(--font-display);
   font-weight: 600;
   line-height: 1.15;
+  letter-spacing: var(--ls-display);
+  overflow-wrap: break-word;
 }
-::selection { background: var(--cotton); color: var(--ink); }
+h1 { font-size: var(--fs-h1); }
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-h3); }
+input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
+::selection { background: var(--lemon); color: var(--ink); }
 
 .container {
   width: min(100% - 48px, var(--max));
@@ -95,7 +162,7 @@ h1, h2, h3 {
 .container.narrow { width: min(100% - 48px, 1000px); }
 
 :focus-visible {
-  outline: 3px solid var(--blueberry);
+  outline: 3px solid var(--grape);
   outline-offset: 3px;
 }
 
@@ -115,7 +182,7 @@ h1, h2, h3 {
   padding: 10px 18px;
   border-radius: 999px;
   background: var(--ink);
-  color: #fff;
+  color: var(--white);
   font-weight: 700;
 }
 .skip-link:focus { left: 16px; }
@@ -145,7 +212,7 @@ h1, h2, h3 {
   animation: char-in .8s var(--ease-spring) backwards;
   animation-delay: calc(var(--i) * 40ms + var(--split-delay, 150ms));
 }
-.char:hover { animation: char-jump .5s var(--ease-spring); color: var(--bubblegum); }
+.char:hover { animation: char-jump .5s var(--ease-spring); }
 
 
 /* ---------- 4. Header + buttons ---------- */
@@ -153,7 +220,7 @@ h1, h2, h3 {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(245, 244, 251, .82);
+  background: color-mix(in srgb, var(--lavender-white) 88%, transparent);
   backdrop-filter: blur(14px) saturate(1.4);
   -webkit-backdrop-filter: blur(14px) saturate(1.4);
   border-bottom: 1px solid var(--line);
@@ -161,8 +228,8 @@ h1, h2, h3 {
   transition: box-shadow .3s ease, background .3s ease;
 }
 .site-header.is-scrolled {
-  background: rgba(255, 255, 255, .78);
-  box-shadow: 0 10px 30px -18px rgba(35, 33, 58, .35);
+  background: color-mix(in srgb, var(--lavender-white) 95%, transparent);
+  box-shadow: 0 10px 30px -18px var(--shade);
 }
 .site-header .container {
   display: flex;
@@ -176,8 +243,10 @@ h1, h2, h3 {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-weight: 600;
   font-size: 1.125rem;
+  letter-spacing: var(--ls-display);
   text-decoration: none;
 }
 /* Little round headshot in the top-left corner */
@@ -188,7 +257,7 @@ h1, h2, h3 {
   height: 42px;
   border-radius: 50%;
   padding: 2px;
-  background: conic-gradient(var(--bubblegum), var(--grape), var(--blueberry), var(--mint), var(--bubblegum));
+  background: var(--grape);
   transition: transform .5s var(--ease-spring);
 }
 .brand-photo img {
@@ -196,7 +265,7 @@ h1, h2, h3 {
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
-  border: 2px solid #fff;
+  border: 2px solid var(--lavender-white);
 }
 .brand:hover .brand-photo { transform: rotate(-12deg) scale(1.12); }
 .brand:hover .brand-photo::after {
@@ -207,10 +276,10 @@ h1, h2, h3 {
   padding: 1px 7px;
   border-radius: 10px 10px 10px 2px;
   background: var(--ink);
-  color: #fff;
-  font-family: var(--hand);
-  font-size: 1rem;
-  line-height: 1.3;
+  color: var(--white);
+  font-family: var(--font-display);
+  font-size: .875rem;
+  line-height: 1.4;
   transform: rotate(12deg);
   animation: pop-in .35s var(--ease-spring);
 }
@@ -218,6 +287,9 @@ h1, h2, h3 {
 .site-nav {
   display: flex;
   align-items: center;
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: var(--ls-display);
   gap: clamp(16px, 3vw, 44px);
 }
 .site-nav a:not(.btn) {
@@ -233,7 +305,7 @@ h1, h2, h3 {
   bottom: -2px;
   height: 3px;
   border-radius: 3px;
-  background: linear-gradient(90deg, var(--bubblegum), var(--grape));
+  background: var(--grape);
   transform: scaleX(0);
   transform-origin: right;
   transition: transform .4s var(--ease-out);
@@ -244,6 +316,7 @@ h1, h2, h3 {
   transform-origin: left;
 }
 
+/* Candy buttons: pill shape, glossy top, and a little "press" */
 .btn {
   position: relative;
   isolation: isolate;
@@ -252,67 +325,64 @@ h1, h2, h3 {
   align-items: center;
   justify-content: center;
   min-height: 52px;
-  padding: 0 40px;
-  border: 2px solid var(--ink);
+  padding: 0 36px;
+  border: 0;
   border-radius: 999px;
-  background: var(--ink);
-  color: #fff;
-  font: inherit;
-  font-weight: 700;
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--grape) 85%, var(--white)) 0%,
+    var(--grape) 55%,
+    color-mix(in srgb, var(--grape) 80%, var(--grape-deep)) 100%);
+  color: var(--on-primary);
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: var(--ls-display);
+  line-height: 1.2;
+  text-align: center;
   text-decoration: none;
   cursor: pointer;
-  transition:
-    transform .4s var(--ease-spring),
-    box-shadow .3s ease,
-    border-color .3s ease,
-    color .3s ease;
+  box-shadow: 0 4px 0 var(--primary-dark), 0 8px 18px -8px var(--shade);
+  transition: transform .18s ease, box-shadow .18s ease;
 }
-/* Gradient that fades in on hover */
+/* Glossy shine across the top half */
 .btn::before {
   content: "";
   position: absolute;
-  inset: 0;
   z-index: -1;
-  background: linear-gradient(120deg, var(--bubblegum), var(--grape));
-  opacity: 0;
-  transition: opacity .35s ease;
-}
-/* Light streak that sweeps across on hover */
-.btn::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: -60%;
-  width: 40%;
-  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .45), transparent);
-  transform: skewX(-20deg);
-  transition: left .7s var(--ease-out);
+  left: 10%;
+  right: 10%;
+  top: 3px;
+  height: 45%;
+  border-radius: 999px;
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--white) 55%, transparent),
+    color-mix(in srgb, var(--white) 0%, transparent));
 }
 .btn:hover {
-  transform: translateY(-3px);
-  border-color: transparent;
-  box-shadow: 0 14px 28px -12px rgba(157, 107, 255, .7);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 var(--primary-dark), 0 12px 22px -8px var(--shade);
 }
-.btn:hover::before { opacity: 1; }
-.btn:hover::after { left: 130%; }
-.btn:active { transform: translateY(0) scale(.96); }
+.btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--primary-dark), 0 4px 10px -6px var(--shade);
+}
 
+/* Secondary: transparent with a grape border and grape text */
 .btn-outline {
   background: transparent;
   color: var(--ink);
-  border-color: var(--muted);
+  box-shadow: inset 0 0 0 2px var(--grape), 0 4px 0 var(--line);
 }
-.btn-outline::before { background: var(--cotton); }
+.btn-outline::before { opacity: .6; }
 .btn-outline:hover {
-  color: var(--ink);
-  border-color: var(--bubblegum);
-  box-shadow: 0 14px 28px -14px rgba(255, 95, 162, .6);
+  background: var(--lilac);
+  box-shadow: inset 0 0 0 2px var(--grape), 0 6px 0 var(--line), 0 12px 22px -8px var(--shade);
 }
+.btn-outline:active { box-shadow: inset 0 0 0 2px var(--grape), 0 1px 0 var(--line); }
 .btn-sm {
-  min-height: 40px;
-  padding: 0 26px;
-  font-size: .9375rem;
+  min-height: 42px;
+  padding: 0 24px;
+  font-size: 1rem;
 }
 
 
@@ -327,16 +397,14 @@ h1, h2, h3 {
 
 /* Soft colored shapes drifting behind the hero */
 .blobs { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+/* One very soft orchid glow behind the machine */
 .blob {
   position: absolute;
   border-radius: 50%;
   filter: blur(60px);
-  opacity: .45;
-  animation: drift 18s ease-in-out infinite alternate;
+  opacity: .12;
 }
-.blob-1 { width: 420px; height: 420px; right: 4%;  top: -80px;  background: var(--cotton); }
-.blob-2 { width: 320px; height: 320px; right: 30%; bottom: -120px; background: #c9d4ff; animation-duration: 22s; animation-delay: -6s; }
-.blob-3 { width: 260px; height: 260px; left: -60px; top: 30%;   background: #c8f1e8; animation-duration: 26s; animation-delay: -12s; }
+.blob-1 { width: 460px; height: 460px; right: 2%; top: -60px; background: var(--orchid); }
 
 .hero .container {
   display: grid;
@@ -345,23 +413,63 @@ h1, h2, h3 {
   align-items: center;
 }
 .hero h1 {
-  font-size: clamp(2.75rem, 6vw, 4.5rem);
-  letter-spacing: -.01em;
+  font-size: var(--fs-h1);
 }
 .tagline {
+  width: fit-content;      /* the wipe runs across the text, not the whole column */
   margin: 20px 0 0;
-  font-size: clamp(1.5rem, 2.6vw, 2rem);
-  line-height: 1.3;
+  padding-bottom: .3em;    /* room for the squiggle inside the box */
+  font-size: clamp(1.375rem, 1.15rem + 1vw, 1.75rem);
+  line-height: 1.4;
 }
 .tagline em {
+  position: relative;
+  display: inline-block;
   font-style: normal;
-  background: linear-gradient(90deg, var(--bubblegum), var(--grape), var(--blueberry), var(--bubblegum));
-  background-size: 300% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: shimmer-text 6s linear infinite;
+  font-weight: 700;
+  color: var(--ink);
+  padding-bottom: .12em;
 }
+/* Hand-drawn orchid squiggle that sits below the words (never through them) */
+.tagline em::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: .1em;
+  bottom: -.22em;
+  height: .32em;
+  background: var(--orchid);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M3 9 C30 3 55 3 80 8 S130 13 155 7 S190 4 197 8' fill='none' stroke='black' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 0 0 / 100% 100%;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M3 9 C30 3 55 3 80 8 S130 13 155 7 S190 4 197 8' fill='none' stroke='black' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 0 0 / 100% 100%;
+}
+
+/* After the page loads: the tagline wipes in from left to right with a soft
+   edge, then the squiggle draws itself under "a little sweeter." */
+@property --wipe {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+.js .tagline[data-reveal] {
+  opacity: 1;
+  transform: none;
+  transition: none;
+  --wipe: -25%;
+  -webkit-mask-image: linear-gradient(90deg, #000 var(--wipe), transparent calc(var(--wipe) + 25%));
+  mask-image: linear-gradient(90deg, #000 var(--wipe), transparent calc(var(--wipe) + 25%));
+}
+.js .tagline[data-reveal].is-visible {
+  animation: wipe-in 1s var(--ease-out) var(--d, 0ms) forwards;
+}
+.js .tagline[data-reveal] em::after { clip-path: inset(0 100% 0 0); }
+.js .tagline[data-reveal].is-visible em::after {
+  animation: draw-under .7s var(--ease-out) calc(var(--d, 0ms) + 800ms) forwards;
+}
+@keyframes wipe-in {
+  from { --wipe: -25%; transform: translateX(-10px); }
+  to   { --wipe: 100%; transform: none; }
+}
+@keyframes draw-under { to { clip-path: inset(0 0 0 0); } }
 .roles {
   display: flex;
   flex-wrap: wrap;
@@ -371,16 +479,25 @@ h1, h2, h3 {
   list-style: none;
 }
 .roles li {
-  padding: 4px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 14px 4px 8px;
   border-radius: 999px;
-  background: var(--paper-2);
-  border: 1px solid var(--line);
+  background: var(--lilac);
   font-size: .9375rem;
   font-weight: 700;
-  color: var(--ink-soft);
-  transition: transform .4s var(--ease-spring), background .3s ease, color .3s ease;
+  color: var(--ink);
+  transition: transform .4s var(--ease-spring), background .3s ease;
 }
-.roles li:hover { transform: translateY(-3px) rotate(-2deg); background: var(--flavor); color: #fff; }
+.roles li::before {
+  --gb: 12px;
+  --flavor: var(--lemon);       /* one accent for the hero tags */
+  content: "";
+  width: var(--gb);
+  height: var(--gb);
+}
+.roles li:hover { transform: translateY(-3px) rotate(-2deg); background: color-mix(in srgb, var(--lemon) 35%, var(--lilac)); }
 .intro {
   max-width: 52ch;
   margin: 18px 0 0;
@@ -401,23 +518,25 @@ h1, h2, h3 {
 .machine svg { width: 100%; height: auto; overflow: visible; }
 .machine.is-shaking svg { animation: shake .55s ease-in-out; }
 
-.globe-glass  { fill: var(--glass); stroke: var(--ink); stroke-width: 4; }
+.globe-glass  { fill: var(--glass); stroke: var(--machine-line); stroke-width: 4; }
 .globe-shine  {
   fill: none;
-  stroke: #d9d3ff;
+  stroke: var(--lilac);
+  opacity: .9;
   stroke-width: 5;
   stroke-linecap: round;
   stroke-dasharray: 160;
   animation: draw 1.2s var(--ease-out) 1.2s backwards;
 }
-.machine-neck { fill: #fff; stroke: var(--ink); stroke-width: 4; }
-.machine-body { fill: var(--machine); stroke: var(--ink); stroke-width: 4; }
-.body-shine   { fill: #fff; opacity: .35; }
-.chute        { fill: #fff; stroke: var(--ink); stroke-width: 3; }
-.machine-base { fill: var(--machine-dark); stroke: var(--ink); stroke-width: 4; }
+.machine-neck { fill: var(--white); stroke: var(--machine-line); stroke-width: 4; }
+.machine-body { fill: var(--machine); stroke: var(--machine-line); stroke-width: 4; }
+.body-shine   { fill: var(--white); opacity: .4; }   /* glossy highlight on the body */
+.chute        { fill: var(--white); stroke: var(--machine-line); stroke-width: 3; }
+.machine-base { fill: var(--machine-dark); stroke: var(--machine-line); stroke-width: 4; }
 
-.gumball circle:first-child { stroke: var(--ink); stroke-width: 2; }
-.gumball-shine { fill: #fff; opacity: .85; }
+/* Gloss and shade overlays for the SVG gumballs (gradients are in index.html) */
+.gb-gloss-hi  { stop-color: var(--white); }
+.gb-shade-lo  { stop-color: var(--grape); }
 .gumball {
   transform-box: fill-box;
   transform-origin: center;
@@ -435,9 +554,9 @@ h1, h2, h3 {
   width: 18%;
   aspect-ratio: 1;
   padding: 0;
-  border: 4px solid var(--ink);
+  border: 4px solid var(--machine-line);
   border-radius: 50%;
-  background: #fff;
+  background: var(--white);
   cursor: pointer;
   transform: translate(-50%, -50%);
   transition: rotate .9s var(--ease-spring), scale .3s var(--ease-spring);
@@ -459,12 +578,13 @@ h1, h2, h3 {
   position: absolute;
   inset: -4px;
   border-radius: 50%;
-  border: 3px solid #fff;
+  border: 3px solid var(--white);
   opacity: 0;
   pointer-events: none;
 }
-.knob.is-idle { animation: knob-nudge 4s ease-in-out 2.4s infinite; }
-.knob.is-idle::after { animation: ring 2s ease-out 2.4s infinite; }
+/* Nudges a few times to say "click me", then stops */
+.knob.is-idle { animation: knob-nudge 4s ease-in-out 2.4s 3; }
+.knob.is-idle::after { animation: ring 2s ease-out 2.4s 3; }
 .knob:hover { scale: 1.08; }
 .knob:active { scale: .94; }
 
@@ -490,11 +610,13 @@ h1, h2, h3 {
 .turn-hint span {
   display: block;
   margin: 2px 0 0 60px;
-  font-family: var(--hand);
-  font-size: 1.75rem;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.25rem;
   font-weight: 600;
   white-space: nowrap;
-  animation: hint-in .6s var(--ease-spring) 2s backwards, bob 2.6s ease-in-out 2.6s infinite;
+  transform: rotate(-4deg);
+  animation: hint-in .6s var(--ease-spring) 2s backwards;
 }
 
 
@@ -504,7 +626,7 @@ h1, h2, h3 {
 
 .work { padding: 72px 0 96px; }
 
-.section-title { font-size: clamp(2rem, 4vw, 2.75rem); }
+.section-title { font-size: var(--fs-h2); }
 
 .flavor-label {
   margin: 18px 0 0;
@@ -522,14 +644,15 @@ h1, h2, h3 {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 22px;
-  border: 2px solid var(--line);
+  padding: 9px 20px 9px 12px;
+  border: 2px solid transparent;
   border-radius: 999px;
-  background: #fff;
+  background: var(--lilac);
   color: var(--ink);
-  font: inherit;
-  font-size: .9375rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: var(--ls-display);
   cursor: pointer;
   transition:
     transform .4s var(--ease-spring),
@@ -539,44 +662,53 @@ h1, h2, h3 {
     box-shadow .3s ease;
 }
 .chip::before {
+  --gb: 14px;
   content: "";
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--flavor);
+  width: var(--gb);
+  height: var(--gb);
   transition: transform .4s var(--ease-spring);
 }
+.chip[data-filter="all"] { padding-left: 20px; }
 .chip[data-filter="all"]::before { display: none; }
-.chip:hover { transform: translateY(-3px); border-color: var(--flavor, var(--ink)); }
+.chip:hover { transform: translateY(-3px); border-color: var(--flavor, var(--grape)); }
 .chip:hover::before { transform: scale(1.4); }
 .chip:active { transform: scale(.94); }
+/* Selected filter: filled grape plus a check mark */
 .chip[aria-pressed="true"] {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: #fff;
-  box-shadow: 0 10px 22px -12px var(--flavor, var(--ink));
+  background: var(--grape);
+  border-color: var(--grape-deep);
+  color: var(--lavender-white);   /* 9.81:1 */
+  box-shadow: 0 8px 18px -10px var(--shade);
 }
-.chip[aria-pressed="true"]::before { box-shadow: 0 0 0 3px rgba(255, 255, 255, .35); }
+.chip[aria-pressed="true"]::after {
+  content: "✓";
+  content: "✓" / "";   /* decorative: screen readers rely on aria-pressed */
+  margin-left: 2px;
+  font-weight: 700;
+}
+
 .chips.is-ready .chip {
   animation: pop-in .55s var(--ease-spring) backwards;
   animation-delay: calc(var(--i, 0) * 70ms);
 }
 
+/* "Showing 3 projects in UX research", read out by screen readers */
+.filter-status {
+  min-height: 1.6em;
+  margin: 20px 0 0;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--ink-soft);
+}
 .start-with {
   min-height: 1.55em;
-  margin: 20px 0 16px;
+  margin: 4px 0 16px;
   font-weight: 700;
   color: var(--ink-soft);
 }
 .start-with.swap { animation: fade-up .45s var(--ease-out); }
 
-.tray {
-  position: relative;
-  border: 2px dashed transparent;
-  border-radius: calc(var(--radius) + 4px);
-  transition: border-color .5s ease;
-}
-.tray-empty { display: none; }
+.tray { position: relative; }
 
 .grid {
   display: grid;
@@ -591,9 +723,9 @@ h1, h2, h3 {
   --s: 1;
   position: relative;
   padding: 26px 28px 28px;
-  border: 3px solid var(--ink);
+  border: 3px solid transparent;
   border-radius: var(--radius);
-  background: #fff;
+  background: var(--lilac);
   transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(var(--lift)) scale(var(--s));
   transition:
     opacity .5s ease,
@@ -603,8 +735,11 @@ h1, h2, h3 {
     box-shadow .4s ease;
 }
 .card:hover {
-  --lift: -6px;
-  box-shadow: 0 24px 40px -22px var(--flavor);
+  --lift: -5px;
+  border-color: var(--flavor);
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--flavor) 35%, transparent),
+    0 18px 30px -18px var(--shade);
 }
 .card.is-blowing { --s: .96; }
 .card-head {
@@ -613,26 +748,21 @@ h1, h2, h3 {
   gap: 16px;
 }
 .card-ball {
+  --gb: 54px;
   flex: none;
-  width: 54px;
-  height: 54px;
-  border: 2px solid var(--ink);
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 32% 30%, rgba(255, 255, 255, .9) 0 12%, transparent 13%),
-    var(--flavor, #ddd);
+  width: var(--gb);
+  height: var(--gb);
 }
 .card-ball.pop { animation: pop .5s var(--ease-spring); }
 .card:hover .card-ball { animation: roll .9s var(--ease-out); }
-.card-title { font-size: 1.125rem; }
+.card-title { font-size: var(--fs-h3); }
 .card-year { margin: 2px 0 0; font-size: .875rem; color: var(--ink-soft); }
 .card-headline {
   margin: 26px 0 0;
-  font-family: var(--display);
-  font-weight: 500;
-  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-family: var(--font-body);
   font-weight: 700;
-  line-height: 1.25;
+  font-size: clamp(1.0625rem, 1rem + .4vw, 1.25rem);
+  line-height: 1.4;
 }
 .card-meta { margin: 16px 0 0; font-size: .9375rem; color: var(--ink-soft); }
 .card-link {
@@ -654,48 +784,21 @@ h1, h2, h3 {
   border-radius: var(--radius);
 }
 
-/* Filter: cards that don't match fade back */
-.card.is-dimmed,
-.js .card.is-in.is-dimmed {
-  --s: .97;
-  opacity: .35;
-  filter: grayscale(.7);
-  border-color: var(--line);
-}
+/* Filter: cards that don't match are hidden (main.js adds the hidden attribute) */
+.card[hidden] { display: none !important; }
 
-/* Before the knob is turned (only when JavaScript is running) */
-.js .tray:not(.is-filled) { border-color: var(--muted); }
-.js .tray:not(.is-filled) .tray-empty {
-  display: grid;
-  place-items: center;
-  align-content: center;
-  gap: 14px;
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  margin: 0;
-  padding: 24px;
-  text-align: center;
-  font-weight: 700;
-  color: var(--muted);
-}
-.tray-empty::before {
-  content: "";
-  width: 28px;
-  height: 28px;
-  border: 2px solid var(--ink);
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 32% 30%, rgba(255, 255, 255, .9) 0 12%, transparent 13%),
-    var(--bubblegum);
-  animation: bounce 1.4s cubic-bezier(.5, 0, .5, 1) infinite;
-}
+/* Cards slide in when the work section scrolls into view (only when JavaScript is running) */
 .js .card { opacity: 0; visibility: hidden; }
 .js .card.is-in {
   opacity: 1;
   visibility: visible;
-  animation: card-in .6s var(--ease-spring);
+  animation: card-in .6s var(--ease-spring) backwards;
+  animation-delay: calc(var(--i, 0) * 90ms);
 }
+/* A gumball from the machine lands on the card */
+/* After the first slide-in, never replay it (e.g. when a filter shows the card again) */
+.js .card.is-in.is-settled { animation: none; }
+.js .card.is-in.is-hit { animation: card-hit .45s var(--ease-spring); }
 .js .chips:not(.is-ready) { visibility: hidden; }
 
 
@@ -719,16 +822,16 @@ h1, h2, h3 {
   flex: none;
   width: clamp(170px, 20vw, 240px);
   aspect-ratio: 1;
-  animation: float 6s ease-in-out infinite;
 }
 .headshot-wrap::before {
   content: "";
   position: absolute;
   inset: -14px;
   border-radius: 50%;
-  background: conic-gradient(var(--bubblegum), var(--grape), var(--blueberry), var(--sky), var(--mint), var(--bubblegum));
-  animation: spin 8s linear infinite;
+  /* Two accents for this section: tangerine and lemon */
+  background: conic-gradient(var(--tangerine), var(--lemon), var(--tangerine), var(--lemon), var(--tangerine));
 }
+.headshot-wrap:hover::before { animation: spin 3s linear infinite; }
 .headshot-wrap::after {
   content: "";
   position: absolute;
@@ -744,7 +847,7 @@ h1, h2, h3 {
   object-fit: cover;
   object-position: center;
   border-radius: 50%;
-  border: 4px solid var(--ink);
+  border: 4px solid var(--lavender-white);
   transition: transform .6s var(--ease-spring);
 }
 .headshot-wrap:hover .headshot { transform: scale(1.05) rotate(-3deg); }
@@ -776,11 +879,10 @@ h1, h2, h3 {
   align-items: center;
   gap: 18px;
   margin-top: 32px;
-  font-size: clamp(2.25rem, 5vw, 3rem);
+  font-size: var(--fs-h1);
 }
 .case-title .card-ball {
-  width: 46px;
-  height: 46px;
+  --gb: 46px;
   animation: ball-spin-in 1s var(--ease-spring) .25s backwards;
 }
 .case-sub {
@@ -822,23 +924,14 @@ h1, h2, h3 {
   aspect-ratio: 5 / 2;
   border-radius: 12px;
   background:
-    linear-gradient(to top right, transparent calc(50% - 1px), #fff, transparent calc(50% + 1px)),
-    linear-gradient(to bottom right, transparent calc(50% - 1px), #fff, transparent calc(50% + 1px)),
-    #d6d4e2;
+    linear-gradient(to top right, transparent calc(50% - 1px), var(--lavender-white), transparent calc(50% + 1px)),
+    linear-gradient(to bottom right, transparent calc(50% - 1px), var(--lavender-white), transparent calc(50% + 1px)),
+    color-mix(in srgb, var(--grape) 12%, var(--lilac));
   font-size: .875rem;
   font-weight: 700;
 }
-.placeholder-img::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, .5) 50%, transparent 70%);
-  transform: translateX(-100%);
-  animation: sweep 2.8s ease-in-out infinite;
-}
-
 .case-section { margin-top: 52px; }
-.case-section h2 { margin-bottom: 14px; font-size: 1.75rem; }
+.case-section h2 { margin-bottom: 14px; font-size: var(--fs-h2); }
 .case-section p { max-width: 65ch; margin: 0 0 1em; }
 
 .with-aside {
@@ -849,19 +942,16 @@ h1, h2, h3 {
 }
 .callout {
   padding: 18px 20px;
-  border: 2px solid var(--line);
-  border-left: 8px solid var(--flavor, var(--muted));
+  border: 0;
+  border-left: 8px solid var(--flavor, var(--grape));
   border-radius: 12px;
-  background: var(--paper-2);
+  background: var(--lilac);
   transition: transform .4s var(--ease-spring), box-shadow .3s ease;
 }
 .callout:hover { transform: translateY(-4px) rotate(-1deg); box-shadow: 0 18px 30px -20px var(--flavor); }
 .callout h3 {
   margin-bottom: 8px;
-  font-size: .75rem;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
+  font-size: var(--fs-h3);
 }
 .callout p { margin: 0; font-size: .9375rem; }
 
@@ -876,9 +966,9 @@ h1, h2, h3 {
   background: var(--paper-2);
   transition: transform .4s var(--ease-spring), background .3s ease, color .3s ease;
 }
-.stat:hover { transform: translateY(-5px); background: var(--flavor); color: #fff; }
-.stat:hover .stat-label { color: rgba(255, 255, 255, .85); }
-.stat-num { display: block; font-size: 2.5rem; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.stat { border-top: 4px solid transparent; }
+.stat:hover { transform: translateY(-5px); border-top-color: var(--flavor); box-shadow: 0 16px 30px -22px var(--flavor); }
+.stat-num { display: block; font-family: var(--font-display); font-size: 2.5rem; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
 .stat-label { display: block; margin-top: 12px; font-size: .875rem; color: var(--ink-soft); }
 
 .gallery {
@@ -897,7 +987,7 @@ h1, h2, h3 {
 .next-project a { font-weight: 700; text-decoration: none; }
 .next-project .arrow { display: inline-block; transition: transform .4s var(--ease-spring); }
 .next-project a:hover .arrow { transform: translateX(8px); }
-.next-project a:hover { color: var(--flavor); }
+.next-project a:hover { text-decoration: underline; text-decoration-color: var(--flavor); text-decoration-thickness: 3px; text-underline-offset: 5px; }
 
 /* Playground page */
 .page-intro { padding: 64px 0 24px; }
@@ -910,27 +1000,47 @@ h1, h2, h3 {
   top: 0;
   left: 0;
   z-index: 40;           /* below the sticky header */
-  border: 2px solid var(--ink);
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 32% 30%, rgba(255, 255, 255, .9) 0 12%, transparent 13%),
-    var(--flavor);
   pointer-events: none;
   will-change: transform;
 }
 
-/* Shared bubblegum look: shiny highlight + darker rim */
+/* ---------------------------------------------------------
+   Bubblegum film
+   A real gum bubble is thin in the middle and thicker at the
+   edges, so it's a little see-through in the center and darker
+   around the rim. It reflects a soft window highlight plus a
+   small glint. When it tears, the film snaps back and bunches
+   into a thicker, darker edge around the hole.
+   --------------------------------------------------------- */
+@property --hole {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 .bubble,
 .pop-cover,
 .is-arriving body::after {
+  --gum-deep: color-mix(in srgb, var(--flavor) 70%, var(--grape));
+  --gum-light: color-mix(in srgb, var(--flavor) 75%, var(--white));
+  /* Simple fallback for browsers without color-mix() */
+  background: var(--flavor);
   background:
-    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, .95) 0 5%, rgba(255, 255, 255, 0) 6%),
-    radial-gradient(circle at 40% 34%, rgba(255, 255, 255, .4) 0 18%, rgba(255, 255, 255, 0) 38%),
-    radial-gradient(circle at 50% 50%, var(--flavor) 0 60%, var(--flavor) 100%);
-  background:
-    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, .95) 0 5%, rgba(255, 255, 255, 0) 6%),
-    radial-gradient(circle at 40% 34%, rgba(255, 255, 255, .4) 0 18%, rgba(255, 255, 255, 0) 38%),
-    radial-gradient(circle at 50% 50%, var(--flavor) 0 58%, color-mix(in srgb, var(--flavor) 72%, #3a1030) 100%);
+    /* the torn edge, bunched up (only visible once it tears) */
+    radial-gradient(circle at var(--tx, 62%) var(--ty, 36%),
+      transparent var(--hole),
+      var(--gum-deep) var(--hole),
+      var(--gum-light) calc(var(--hole) + min(var(--hole) * .3, 8px)),
+      transparent calc(var(--hole) + min(var(--hole) * .5, 14px))),
+    /* soft window reflection */
+    radial-gradient(ellipse 15% 8% at 33% 24%, color-mix(in srgb, var(--white) 85%, transparent), transparent 70%),
+    /* small second glint */
+    radial-gradient(circle at 71% 74%, color-mix(in srgb, var(--white) 45%, transparent) 0 1.2%, transparent 2.6%),
+    /* thin, slightly see-through middle; denser, darker edges */
+    radial-gradient(circle at 45% 40%,
+      color-mix(in srgb, var(--flavor) 74%, transparent) 0%,
+      color-mix(in srgb, var(--flavor) 88%, transparent) 60%,
+      color-mix(in srgb, var(--gum-deep) 96%, transparent) 100%);
 }
 
 /* The bubble that blows up when you open a case study */
@@ -939,13 +1049,16 @@ h1, h2, h3 {
   z-index: 100;
   border-radius: 50%;
   pointer-events: none;
-  box-shadow: inset -10px -14px 24px rgba(0, 0, 0, .12), 0 0 0 2px rgba(35, 33, 58, .25);
-  will-change: transform;
+  box-shadow:
+    inset -8px -12px 22px var(--shade),
+    inset 6px 8px 16px color-mix(in srgb, var(--white) 25%, transparent),
+    0 18px 36px -18px var(--shade);
+  will-change: transform, border-radius;
 }
 .is-leaving body { pointer-events: none; }
 .is-leaving main { transition: filter .6s ease; filter: blur(1px); }
 
-/* Arriving on a case study: cover the page in bubblegum before it paints */
+/* Arriving on a case study: cover the page in the bubble before it paints */
 .is-arriving body::after {
   content: "";
   position: fixed;
@@ -956,15 +1069,8 @@ h1, h2, h3 {
 }
 @keyframes failsafe { to { opacity: 0; visibility: hidden; } }
 
-/* ...then pop it open */
-@property --hole {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
-}
-/* The bubble tears open from one thin spot (--tx, --ty), the film snaps
-   back away from the hole, and it fades. Three overlapping circles make
-   the hole slightly lumpy, like a real tear. */
+/* ...then it tears open from one thin spot (--tx, --ty).
+   Five overlapping circles make the hole lumpy, like a real rip. */
 .pop-cover {
   --tx: 62%;
   --ty: 36%;
@@ -974,28 +1080,24 @@ h1, h2, h3 {
   pointer-events: none;
   transform-origin: var(--tx) var(--ty);
   -webkit-mask:
-    radial-gradient(circle at var(--tx) var(--ty), transparent var(--hole), #000 calc(var(--hole) + 1.5px)),
-    radial-gradient(circle at calc(var(--tx) + 3%) calc(var(--ty) + 5%), transparent calc(var(--hole) * .9), #000 calc(var(--hole) * .9 + 1.5px)),
-    radial-gradient(circle at calc(var(--tx) - 4%) calc(var(--ty) + 3%), transparent calc(var(--hole) * .82), #000 calc(var(--hole) * .82 + 1.5px));
+    radial-gradient(circle at var(--tx) var(--ty), transparent var(--hole), #000 calc(var(--hole) + 1px)),
+    radial-gradient(circle at calc(var(--tx) + var(--hole) * .22) calc(var(--ty) + var(--hole) * .12), transparent calc(var(--hole) * .82), #000 calc(var(--hole) * .82 + 1px)),
+    radial-gradient(circle at calc(var(--tx) - var(--hole) * .2) calc(var(--ty) + var(--hole) * .16), transparent calc(var(--hole) * .8), #000 calc(var(--hole) * .8 + 1px)),
+    radial-gradient(circle at calc(var(--tx) + var(--hole) * .05) calc(var(--ty) - var(--hole) * .2), transparent calc(var(--hole) * .78), #000 calc(var(--hole) * .78 + 1px)),
+    radial-gradient(circle at calc(var(--tx) - var(--hole) * .16) calc(var(--ty) - var(--hole) * .1), transparent calc(var(--hole) * .84), #000 calc(var(--hole) * .84 + 1px));
   -webkit-mask-composite: source-in;
   mask:
-    radial-gradient(circle at var(--tx) var(--ty), transparent var(--hole), #000 calc(var(--hole) + 1.5px)),
-    radial-gradient(circle at calc(var(--tx) + 3%) calc(var(--ty) + 5%), transparent calc(var(--hole) * .9), #000 calc(var(--hole) * .9 + 1.5px)),
-    radial-gradient(circle at calc(var(--tx) - 4%) calc(var(--ty) + 3%), transparent calc(var(--hole) * .82), #000 calc(var(--hole) * .82 + 1.5px));
+    radial-gradient(circle at var(--tx) var(--ty), transparent var(--hole), #000 calc(var(--hole) + 1px)),
+    radial-gradient(circle at calc(var(--tx) + var(--hole) * .22) calc(var(--ty) + var(--hole) * .12), transparent calc(var(--hole) * .82), #000 calc(var(--hole) * .82 + 1px)),
+    radial-gradient(circle at calc(var(--tx) - var(--hole) * .2) calc(var(--ty) + var(--hole) * .16), transparent calc(var(--hole) * .8), #000 calc(var(--hole) * .8 + 1px)),
+    radial-gradient(circle at calc(var(--tx) + var(--hole) * .05) calc(var(--ty) - var(--hole) * .2), transparent calc(var(--hole) * .78), #000 calc(var(--hole) * .78 + 1px)),
+    radial-gradient(circle at calc(var(--tx) - var(--hole) * .16) calc(var(--ty) - var(--hole) * .1), transparent calc(var(--hole) * .84), #000 calc(var(--hole) * .84 + 1px));
   mask-composite: intersect;
 }
-.pop-cover.is-straining { animation: strain .16s ease-in-out forwards; }
-.pop-cover.is-popping  { animation: tear .42s cubic-bezier(.4, 0, .2, 1) forwards; }
-
-/* Small crumbs of gum that fall away from the tear */
-.crumb {
-  position: fixed;
-  z-index: 1001;
-  border-radius: 45% 55% 40% 60% / 55% 40% 60% 45%;
-  background: var(--flavor);
-  filter: brightness(.88);
-  pointer-events: none;
-}
+/* The film stretches and thins for a split second... */
+.pop-cover.is-straining { animation: strain .14s ease-in forwards; }
+/* ...then tears and snaps back */
+.pop-cover.is-popping   { animation: tear .36s cubic-bezier(.2, .75, .3, 1) forwards; }
 
 
 /* ---------- 10. Keyframes ---------- */
@@ -1004,18 +1106,8 @@ h1, h2, h3 {
 @keyframes char-jump   { 40% { transform: translateY(-.25em) rotate(-6deg); } }
 @keyframes fade-up     { from { opacity: 0; transform: translateY(8px); } }
 @keyframes pop-in      { from { opacity: 0; transform: scale(.6); } }
-@keyframes drift {
-  0%   { transform: translate(0, 0) scale(1); }
-  50%  { transform: translate(-40px, 30px) scale(1.12); }
-  100% { transform: translate(30px, -20px) scale(.92); }
-}
-@keyframes shimmer-text { to { background-position: -300% 0; } }
 @keyframes draw        { from { stroke-dashoffset: 160; } }
 @keyframes hint-in     { from { opacity: 0; transform: translateY(10px) rotate(-12deg) scale(.7); } }
-@keyframes bob {
-  0%, 100% { transform: rotate(-4deg) translateY(0); }
-  50%      { transform: rotate(-2deg) translateY(-6px); }
-}
 @keyframes gumball-in {
   0%  { opacity: 0; transform: translateY(-160px); }
   60% { opacity: 1; transform: translateY(6px); }
@@ -1041,13 +1133,12 @@ h1, h2, h3 {
   0%   { opacity: .9; transform: scale(1); }
   100% { opacity: 0; transform: scale(1.7); }
 }
-@keyframes bounce {
-  0%, 100% { transform: translateY(0) scale(1.05, .95); }
-  50%      { transform: translateY(-18px) scale(.95, 1.05); }
-}
 @keyframes card-in {
   0%   { transform: perspective(900px) translateY(18px) scale(.9); }
   100% { transform: perspective(900px) translateY(0) scale(1); }
+}
+@keyframes card-hit {
+  40% { transform: perspective(900px) translateY(4px) scale(.985); }
 }
 @keyframes pop {
   0%   { transform: scale(.4); }
@@ -1058,22 +1149,17 @@ h1, h2, h3 {
   from { transform: rotate(0); }
   to   { transform: rotate(360deg); }
 }
-@keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0); }
-  50%      { transform: translateY(-10px) rotate(1.5deg); }
-}
 @keyframes spin  { to { transform: rotate(360deg); } }
-@keyframes sweep { 60%, 100% { transform: translateX(100%); } }
 @keyframes ball-spin-in {
   from { opacity: 0; transform: translateX(-60px) rotate(-360deg) scale(.4); }
 }
 @keyframes strain {
-  to { transform: scale(1.008); filter: brightness(1.05); }
+  to { transform: scale(1.012); opacity: .9; }
 }
 @keyframes tear {
-  0%   { --hole: 0px; transform: scale(1.008); opacity: 1; }
-  65%  { opacity: 1; }
-  100% { --hole: 170vmax; transform: scale(1.12); opacity: 0; }
+  0%   { --hole: 0px; transform: scale(1.012); opacity: .9; }
+  60%  { opacity: .9; }
+  100% { --hole: 130vmax; transform: scale(1.07); opacity: 0; }
 }
 
 
@@ -1112,4 +1198,11 @@ h1, h2, h3 {
     transition-delay: 0ms !important;
   }
   .js [data-reveal] { opacity: 1; transform: none; }
+  .card:hover { --lift: 0px; --rx: 0deg; --ry: 0deg; }
+  .btn:hover,
+  .btn:active,
+  .chip:hover,
+  .roles li:hover,
+  .stat:hover,
+  .callout:hover { transform: none; }
 }

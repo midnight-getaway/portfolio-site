@@ -21,7 +21,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:opsz,wght@9..40,400;9..40,700&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 <script src="js/main.js" defer></script>
 </head>
@@ -52,8 +52,6 @@
   <section class="hero" aria-labelledby="hero-title">
     <div class="blobs" aria-hidden="true">
       <span class="blob blob-1"></span>
-      <span class="blob blob-2"></span>
-      <span class="blob blob-3"></span>
     </div>
 
     <div class="container">
@@ -63,9 +61,9 @@
         <h1 id="hero-title" data-split>Hi, I'm Keady.</h1>
         <p class="tagline" data-reveal style="--d: 550ms">Design that starts with people.<br>And ends <em>a little sweeter.</em></p>
         <ul class="roles" data-reveal style="--d: 700ms" aria-label="What I do">
-          <li data-color="bubblegum">Product</li>
-          <li data-color="mint">UX research</li>
-          <li data-color="grape">Project management</li>
+          <li data-color="tangerine">Product</li>
+          <li data-color="spring-green">UX research</li>
+          <li data-color="orchid">Project management</li>
         </ul>
         <p class="intro" data-reveal style="--d: 820ms">[Write one or two sentences about who you are and the problems you like to solve. Keep it short so people get the point in a few seconds.]</p>
         <div class="hero-actions" data-reveal style="--d: 950ms">
@@ -76,7 +74,19 @@
 
       <!-- Gumball machine. The gumballs inside the globe are added by js/main.js -->
       <div class="machine" data-reveal="drop" style="--d: 250ms">
-        <svg viewBox="0 0 300 480" role="img" aria-label="A pink gumball machine full of colorful gumballs">
+        <svg viewBox="0 0 300 480" role="img" aria-label="A purple gumball machine full of colorful gumballs">
+          <defs>
+            <!-- Gloss (upper left) and shade (bottom right) laid over each gumball -->
+            <radialGradient id="gb-gloss" cx="32%" cy="28%" r="50%">
+              <stop offset="0" class="gb-gloss-hi" stop-opacity=".95"/>
+              <stop offset=".4" class="gb-gloss-hi" stop-opacity=".35"/>
+              <stop offset="1" class="gb-gloss-hi" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="gb-shade" cx="35%" cy="30%" r="80%">
+              <stop offset=".55" class="gb-shade-lo" stop-opacity="0"/>
+              <stop offset="1" class="gb-shade-lo" stop-opacity=".4"/>
+            </radialGradient>
+          </defs>
           <circle class="globe-glass" cx="150" cy="150" r="140"/>
           <g id="globe-balls"></g>
           <path class="globe-shine" d="M25 105 A134 134 0 0 1 104 24"/>
@@ -88,7 +98,7 @@
         </svg>
 
         <!-- The knob is a real button: works with Tab + Enter -->
-        <button class="knob is-idle" id="knob" type="button" aria-label="Turn the knob to see my work" aria-controls="tray"></button>
+        <button class="knob is-idle" id="knob" type="button" aria-label="Turn the knob to drop gumballs into my projects" aria-controls="tray"></button>
 
         <p class="turn-hint" aria-hidden="true">
           <svg viewBox="0 0 80 50"><path d="M74 46 C62 14 34 6 8 18"/><path d="M8 18 L19 13 M8 18 L15 28"/></svg>
@@ -109,25 +119,25 @@
       <!-- data-filter must match the words in each card's data-flavors -->
       <div class="chips" id="flavor-chips" role="group" aria-labelledby="flavor-label">
         <button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>
-        <button class="chip" type="button" data-filter="product" data-color="bubblegum" aria-pressed="false">Product</button>
-        <button class="chip" type="button" data-filter="design" data-color="blueberry" aria-pressed="false">UX Design</button>
-        <button class="chip" type="button" data-filter="research" data-color="mint" aria-pressed="false">UX Research</button>
-        <button class="chip" type="button" data-filter="pm" data-color="grape" aria-pressed="false">Project Mgmt</button>
+        <button class="chip" type="button" data-filter="product" data-color="tangerine" aria-pressed="false">Product</button>
+        <button class="chip" type="button" data-filter="design" data-color="aqua" aria-pressed="false">UX Design</button>
+        <button class="chip" type="button" data-filter="research" data-color="spring-green" aria-pressed="false">UX Research</button>
+        <button class="chip" type="button" data-filter="pm" data-color="orchid" aria-pressed="false">Project Mgmt</button>
       </div>
 
-      <p class="start-with" id="start-with" aria-live="polite"></p>
+      <!-- Filled in by js/main.js; role="status" makes screen readers announce each change -->
+      <p class="filter-status" id="filter-status" role="status" aria-live="polite"></p>
+      <p class="start-with" id="start-with"></p>
 
-      <!-- Don't add data-reveal to the tray or cards: the gumballs need to know exactly where they are -->
+      <!-- Cards animate in on their own when this section scrolls into view (js/main.js) -->
       <div class="tray" id="tray">
-        <p class="tray-empty">Case study cards land here after the knob is turned.</p>
-
         <div class="grid">
           <!--
             CARD TEMPLATE
-            data-color   = gumball color (bubblegum, blueberry, mint, grape, sky, cotton)
+            data-color   = gumball color (orchid, aqua, lemon, spring-green, tangerine)
             data-flavors = which filter chips show this card (product, design, research, pm), separated by spaces
           -->
-          <article class="card" data-color="grape" data-flavors="pm product">
+          <article class="card" data-color="orchid" data-flavors="pm product">
             <div class="card-head">
               <span class="card-ball" aria-hidden="true"></span>
               <div>
@@ -140,7 +150,7 @@
             <a class="card-link" href="case-partner-platform.html" data-bubble>Read case study<span class="sr-only">: Partner Platform Rollout</span> <span class="arrow" aria-hidden="true">→</span></a>
           </article>
 
-          <article class="card" data-color="bubblegum" data-flavors="product">
+          <article class="card" data-color="tangerine" data-flavors="product">
             <div class="card-head">
               <span class="card-ball" aria-hidden="true"></span>
               <div>
@@ -153,7 +163,7 @@
             <a class="card-link" href="case-crm-power-bi.html" data-bubble>Read case study<span class="sr-only">: CRM to Power BI Pipeline</span> <span class="arrow" aria-hidden="true">→</span></a>
           </article>
 
-          <article class="card" data-color="mint" data-flavors="research">
+          <article class="card" data-color="spring-green" data-flavors="research">
             <div class="card-head">
               <span class="card-ball" aria-hidden="true"></span>
               <div>
@@ -166,7 +176,7 @@
             <a class="card-link" href="case-motivated-avoidance.html" data-bubble>Read case study<span class="sr-only">: Motivated Avoidance Study</span> <span class="arrow" aria-hidden="true">→</span></a>
           </article>
 
-          <article class="card" data-color="blueberry" data-flavors="design">
+          <article class="card" data-color="aqua" data-flavors="design">
             <div class="card-head">
               <span class="card-ball" aria-hidden="true"></span>
               <div>
