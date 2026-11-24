@@ -2,18 +2,20 @@
    Keady Van Zandt: Portfolio
    styles.css
    ---------------------------------------------------------
-   1. Variables (colors, fonts, motion)
-   2. Base
-   3. Scroll-reveal + text animations
-   4. Header + buttons
-   5. Hero + gumball machine
-   6. Selected work (flavor chips, tray, cards)
-   7. Contact + footer
-   8. Case study pages
-   9. Gumball flight + bubble transition
-   10. Keyframes
-   11. Responsive
-   12. Reduced motion
+   1. Variables (colors, type scale, spacing, motion)
+   2. Gumballs
+   3. Base
+   4. Scroll-reveal + text animations
+   5. Header + buttons
+   6. Hero + gumball machine
+   7. Selected work (filters, cards)
+   8. Contact + footer
+   9. Case study pages
+   10. Image frames + captions
+   11. Gumball flight + bubble transition
+   12. Keyframes
+   13. Responsive
+   14. Reduced motion
    ========================================================= */
 
 
@@ -27,7 +29,7 @@
   --paper:        #FAFAF8;   /* page background */
   --surface:      #FFFFFF;   /* cards and raised surfaces */
   --line:         #E8E5E1;   /* hairlines, dividers, card borders */
-  --tint:         #F1EFEC;   /* tags, filter chips, secondary button hover */
+  --tint:         #F1EFEC;   /* tags, filter chips, secondary button hover, image frames */
   --white:        #FFFFFF;
   --black:        #000000;   /* only used to darken gumball shading */
 
@@ -55,7 +57,8 @@
   --primary-hover: var(--ink-hover);
   --on-primary: var(--white);   /* 18.21:1 on ink */
   --focus: var(--accent);
-  --shade: color-mix(in srgb, var(--ink) 14%, transparent);   /* soft shadows */
+  --border-hover: color-mix(in srgb, var(--ink) 24%, var(--line));   /* card border on hover */
+  --shade: color-mix(in srgb, var(--ink) 14%, transparent);          /* only used by the bubble transition */
 
   /* Gumball machine */
   --machine: var(--ink);
@@ -67,26 +70,56 @@
   --gb-lo-amount: 80%;          /* how much of the base color is in the shade */
   --gb-lo-with: var(--black);   /* the shade is the base color, slightly darkened */
 
-  --radius: 18px;
-  --max: 1200px;
+  /* ===== FONTS (loaded in each page's <head> from Google Fonts) ===== */
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;  /* hero headline, h1, h2, section titles, big numbers */
+  --font-body: "Inter", system-ui, sans-serif;                   /* everything else */
+  /* Two weights per font: Bricolage 600 and 700, Inter 400 and 600 */
+  --fw-display: 600;
+  --fw-display-bold: 700;      /* hero headline only */
+  --fw-body: 400;
+  --fw-strong: 600;            /* h3, labels, nav, buttons, chips */
+
+  /* ===== TYPE SCALE ===== */
+  --fs-display: clamp(3rem, 2rem + 4vw, 5.5rem);          /* "Hi, I'm Keady." */
+  --fs-h1: clamp(2.25rem, 1.6rem + 2.4vw, 3.25rem);       /* case study titles */
+  --fs-h2: clamp(1.75rem, 1.35rem + 1.5vw, 2.5rem);       /* section titles */
+  --fs-h3: clamp(1.125rem, 1.05rem + .3vw, 1.25rem);      /* card titles, small headings */
+  --fs-lead: clamp(1.25rem, 1.1rem + .6vw, 1.5rem);       /* tagline, case study subtitle */
+  --fs-body: clamp(1.0625rem, 1.03rem + .15vw, 1.125rem); /* 17 to 18px */
+  --fs-small: .875rem;                                     /* 14px: labels, meta, captions */
+  --fs-xs: .75rem;                                         /* 12px: badges and all-caps labels only */
+  --fs-stat: clamp(2rem, 1.6rem + 1.5vw, 2.75rem);        /* big result numbers */
+  --lh-body: 1.6;
+  --lh-heading: 1.12;
+  --ls-display: -.03em;        /* hero headline */
+  --ls-heading: -.022em;       /* h1, h2 */
+  --ls-label: .01em;           /* small or all-caps labels */
+
+  /* ===== SPACING SCALE ===== */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 48px;
+  --space-6: 64px;
+  --space-7: 96px;
+  --space-8: 128px;
+  --section-y: clamp(var(--space-6), 2rem + 6vw, var(--space-8));   /* 64px on phones up to 128px on desktop */
+
+  /* ===== SHAPE + LAYOUT ===== */
+  --radius: 16px;              /* cards, image frames, boxes */
+  --radius-inner: 8px;         /* images inside a frame */
+  --pill: 999px;               /* buttons, tags, chips, badges */
+  --max: 1200px;               /* page content width */
+  --case-max: var(--max);      /* case studies share the same grid; text keeps to the reading column */
+  --read: 65ch;                /* comfortable reading width */
+  --gutter: var(--space-3);
   --header-h: 80px;
 
-  /* ===== FONT TOKENS (loaded in each page's <head> from Google Fonts) ===== */
-  --font-display: "Fredoka", system-ui, sans-serif;  /* large display only: name, h1, h2, section titles, big numbers */
-  --font-body: "Nunito", system-ui, sans-serif;      /* everything else: body, h3, nav, buttons, chips, labels */
-
-  /* Type scale: headings shrink smoothly on small screens */
-  --fs-h1: clamp(2.25rem, 1.6rem + 2.6vw, 3rem);
-  --fs-h2: clamp(1.75rem, 1.4rem + 1.5vw, 2.25rem);
-  --fs-h3: clamp(1.25rem, 1.15rem + .5vw, 1.5rem);
-  --fs-body: clamp(1rem, .96rem + .2vw, 1.125rem);
-  --fs-small: .9375rem;
-  --lh-body: 1.6;
-  --ls-display: .015em;   /* slightly loose, soft candy look */
-
-  /* Motion */
+  /* ===== MOTION ===== */
   --ease-out: cubic-bezier(.16, 1, .3, 1);
-  --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+  --ease-spring: cubic-bezier(.34, 1.56, .64, 1);   /* gumball machine only */
+  --t-fast: 180ms;             /* hovers and presses */
 }
 
 /* data-tone="..." picks a gumball color. Decorative only: categories don't have colors.
@@ -106,16 +139,14 @@
 }
 
 
-/* ---------- Reusable gumball ----------
+/* ---------- 2. Gumballs ----------
    A shiny ball: soft white gloss in the upper left, gentle shade at the
-   bottom right. Use class="gumball" (set --flavor for the color and --gb
+   bottom right. Use class="gumball" (set data-tone for the color and --gb
    for the size), or add a selector here. */
 .gumball,
 .card-ball,
 .flying-ball {
   --gb: 16px;
-  /* Solid base, soft white highlight in the upper left, and a slightly darker
-     shade of the same color toward the bottom right */
   --gb-base: var(--flavor, var(--gum-pink));
   --gb-lo: color-mix(in oklab, var(--gb-base) var(--gb-lo-amount), var(--gb-lo-with));
   border-radius: 50%;
@@ -127,24 +158,10 @@
     radial-gradient(circle at 42% 40%, var(--gb-base) 52%, var(--gb-lo) 100%);
   box-shadow: 0 0 0 1px color-mix(in oklab, var(--gb-lo) 35%, transparent);
 }
-.gumball { display: inline-block; width: var(--gb); height: var(--gb); vertical-align: middle; }
-
-/* Gumball bullet points for lists inside case studies */
-.case-section ul { list-style: none; padding: 0; margin: 0 0 1em; }
-.case-section ul li { position: relative; padding-left: 1.7em; margin-bottom: .5em; }
-.case-section ul li::before {
-  content: "";
-  position: absolute;
-  left: .35em;
-  top: .62em;
-  width: .4em;
-  height: .4em;
-  border-radius: 50%;
-  background: var(--ink);
-}
+span.gumball { display: inline-block; width: var(--gb); height: var(--gb); vertical-align: middle; }
 
 
-/* ---------- 2. Base ---------- */
+/* ---------- 3. Base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 
 html { scroll-behavior: smooth; overflow-x: clip; }   /* no sideways scrolling on phones */
@@ -152,42 +169,50 @@ html { scroll-behavior: smooth; overflow-x: clip; }   /* no sideways scrolling o
 body {
   margin: 0;
   font-family: var(--font-body);
+  font-weight: var(--fw-body);
   font-size: var(--fs-body);
   line-height: var(--lh-body);
   color: var(--ink);
   background: var(--paper);
   -webkit-font-smoothing: antialiased;
+  font-feature-settings: "cv11", "ss01";   /* Inter: cleaner alternate letterforms */
   overflow-x: hidden;
 }
 
 img { display: block; max-width: 100%; height: auto; }
 a { color: inherit; }
+p { margin: 0; }
+main p { max-width: var(--read); }
+
 h1, h2, h3 {
   margin: 0;
-  font-family: var(--font-display);
-  font-weight: 600;
-  line-height: 1.15;
-  letter-spacing: var(--ls-display);
+  color: var(--heading);
   overflow-wrap: break-word;
 }
-h1, h2, h3 { color: var(--heading); }
+h1, h2 {
+  font-family: var(--font-display);
+  font-weight: var(--fw-display);
+  line-height: var(--lh-heading);
+  letter-spacing: var(--ls-heading);
+}
 h1 { font-size: var(--fs-h1); }
 h2 { font-size: var(--fs-h2); }
-/* Smaller headings use Nunito (bold) for readability; Fredoka stays for big display text */
 h3 {
   font-family: var(--font-body);
-  font-weight: 700;
+  font-weight: var(--fw-strong);
   font-size: var(--fs-h3);
-  letter-spacing: 0;
+  line-height: 1.3;
+  letter-spacing: -.01em;
 }
 
-/* Inline links in running text: grape, underlined, thicker on hover and focus */
+/* Inline links in running text: pink, underlined, thicker on hover and focus */
 main p a:not(.btn),
 main li a:not(.btn) {
   color: var(--link);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: .18em;
+  transition: text-decoration-thickness var(--t-fast) ease-out;
 }
 main p a:not(.btn):hover,
 main p a:not(.btn):focus-visible,
@@ -196,17 +221,19 @@ main li a:not(.btn):focus-visible {
   text-decoration-thickness: 2px;
   text-decoration-color: var(--accent);
 }
-input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
+input, select, textarea { font-family: var(--font-body); font-size: var(--fs-body); }
 ::selection { background: color-mix(in srgb, var(--accent) 18%, var(--white)); color: var(--ink); }
 
+/* One content grid: every section uses the same width and left edge */
 .container {
-  width: min(100% - 48px, var(--max));
+  width: min(100% - 2 * var(--gutter), var(--max));
   margin-inline: auto;
 }
-.container.narrow { width: min(100% - 48px, 1000px); }
+.container.narrow { width: min(100% - 2 * var(--gutter), var(--case-max)); }
 
+/* One focus ring for every interactive element: 2px pink with a small offset */
 :focus-visible {
-  outline: 3px solid var(--focus);
+  outline: 2px solid var(--focus);
   outline-offset: 3px;
 }
 
@@ -221,123 +248,123 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
 .skip-link {
   position: absolute;
   left: -9999px;
-  top: 12px;
+  top: var(--space-1);
   z-index: 200;
-  padding: 10px 18px;
-  border-radius: 999px;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--pill);
   background: var(--ink);
   color: var(--white);
-  font-weight: 700;
+  font-weight: var(--fw-strong);
 }
-.skip-link:focus { left: 16px; }
+.skip-link:focus { left: var(--space-2); }
+
+/* Small labels: 14px, slightly spaced */
+.label,
+.flavor-label {
+  font-size: var(--fs-small);
+  font-weight: var(--fw-strong);
+  letter-spacing: var(--ls-label);
+  color: var(--ink-soft);
+}
 
 
-/* ---------- 3. Scroll-reveal + text animations ---------- */
-/* Add data-reveal to anything that should animate in when scrolled to.
+/* ---------- 4. Scroll-reveal + text animations ---------- */
+/* Add data-reveal to anything that should fade in when scrolled to.
    Options: data-reveal (up), "left", "right", "scale", "drop".
    Stagger with style="--d: 200ms". */
 .js [data-reveal] {
   opacity: 0;
-  transform: translateY(32px);
+  transform: translateY(16px);
   transition:
-    opacity .7s var(--ease-out) var(--d, 0ms),
-    transform .9s var(--ease-spring) var(--d, 0ms);
+    opacity .6s var(--ease-out) var(--d, 0ms),
+    transform .7s var(--ease-out) var(--d, 0ms);
 }
-.js [data-reveal="left"]  { transform: translateX(-40px); }
-.js [data-reveal="right"] { transform: translateX(40px); }
-.js [data-reveal="scale"] { transform: scale(.85); }
-.js [data-reveal="drop"]  { transform: translateY(-90px) rotate(-4deg); }
+.js [data-reveal="left"]  { transform: translateX(-16px); }
+.js [data-reveal="right"] { transform: translateX(16px); }
+.js [data-reveal="scale"] { transform: scale(.97); }
+.js [data-reveal="drop"]  { transform: translateY(-90px) rotate(-4deg); }   /* the gumball machine */
+.js [data-reveal="drop"]  { transition-timing-function: var(--ease-out), var(--ease-spring); }
 .js [data-reveal].is-visible { opacity: 1; transform: none; }
 
-/* Letters that bounce in (added by main.js to elements with data-split) */
+/* Letters that bounce in on load (added by main.js to elements with data-split) */
 .word { display: inline-block; white-space: nowrap; }
 .char {
   display: inline-block;
   animation: char-in .8s var(--ease-spring) backwards;
-  animation-delay: calc(var(--i) * 40ms + var(--split-delay, 150ms));
+  animation-delay: calc(var(--i) * 35ms + var(--split-delay, 150ms));
 }
-.char:hover { animation: char-jump .5s var(--ease-spring); }
 
 
-/* ---------- 4. Header + buttons ---------- */
+/* ---------- 5. Header + buttons ---------- */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: color-mix(in srgb, var(--paper) 90%, transparent);
-  backdrop-filter: blur(14px) saturate(1.4);
-  -webkit-backdrop-filter: blur(14px) saturate(1.4);
-  border-bottom: 1px solid var(--line);
-  animation: header-in .8s var(--ease-out) backwards;
-  transition: box-shadow .3s ease, background .3s ease;
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--t-fast) ease-out;
 }
-.site-header.is-scrolled {
-  background: color-mix(in srgb, var(--paper) 96%, transparent);
-  box-shadow: 0 10px 30px -18px var(--shade);
-}
+.site-header.is-scrolled { border-bottom-color: var(--line); }
 .site-header .container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: var(--space-3);
   min-height: var(--header-h);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 1.125rem;
-  letter-spacing: var(--ls-display);
-  color: var(--heading);
+  gap: var(--space-1);
   min-height: 44px;
+  font-weight: var(--fw-strong);
+  font-size: var(--fs-body);
+  letter-spacing: -.01em;
+  color: var(--heading);
   text-decoration: none;
 }
 /* Little round headshot in the top-left corner */
 .brand-photo {
   position: relative;
   flex: none;
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  padding: 2px;
-  background: var(--ink);
-  transition: transform .5s var(--ease-spring);
+  border: 1px solid var(--line);
+  transition: transform var(--t-fast) ease-out;
 }
 .brand-photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
-  border: 2px solid var(--paper);
 }
-.brand:hover .brand-photo { transform: rotate(-12deg) scale(1.12); }
+.brand:hover .brand-photo { transform: rotate(-8deg); }
 .brand:hover .brand-photo::after {
   content: "hi!";
   position: absolute;
   left: 70%;
   top: -14px;
-  padding: 1px 7px;
+  padding: 0 var(--space-1);
   border-radius: 10px 10px 10px 2px;
   background: var(--ink);
   color: var(--white);
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: .8125rem;
-  line-height: 1.4;
-  transform: rotate(12deg);
-  animation: pop-in .35s var(--ease-spring);
+  font-weight: var(--fw-strong);
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+  animation: pop-in .2s var(--ease-out);
 }
 
 .site-nav {
   display: flex;
   align-items: center;
-  font-family: var(--font-body);
-  font-weight: 700;
+  gap: clamp(var(--space-2), 3vw, var(--space-5));
+  font-size: var(--fs-small);
+  font-weight: var(--fw-strong);
   color: var(--heading);
-  gap: clamp(16px, 3vw, 44px);
 }
 .site-nav a:not(.btn) {
   position: relative;
@@ -346,118 +373,103 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
   min-height: 44px;
   text-decoration: none;
 }
+/* Thin pink underline: animates in on hover, stays on the active page */
 .site-nav a:not(.btn)::after {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 6px;
-  height: 3px;
-  border-radius: 3px;
+  bottom: 9px;
+  height: 2px;
   background: var(--accent);
   transform: scaleX(0);
-  transform-origin: right;
-  transition: transform .4s var(--ease-out);
+  transform-origin: left;
+  transition: transform var(--t-fast) ease-out;
 }
 .site-nav a:not(.btn):hover::after,
-.site-nav a[aria-current="page"]::after {
-  transform: scaleX(1);
-  transform-origin: left;
-}
+.site-nav a[aria-current="page"]::after { transform: scaleX(1); }
 
-/* Buttons: rounded pill, solid ink, small lift on hover and press on click */
+/* Buttons: rounded pill, solid ink. Hover: slightly lighter ink. Press: tiny scale-down. */
 .btn {
-  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 52px;
-  padding: 0 36px;
+  min-height: 48px;
+  padding: 0 var(--space-3);
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--pill);
   background: var(--primary);
   color: var(--on-primary);
   font-family: var(--font-body);
-  font-size: 1.125rem;
-  font-weight: 700;
+  font-size: var(--fs-body);
+  font-weight: var(--fw-strong);
   line-height: 1.2;
   text-align: center;
   text-decoration: none;
   cursor: pointer;
-  transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+  transition: background var(--t-fast) ease-out, transform var(--t-fast) ease-out;
 }
-.btn:hover {
-  background: var(--primary-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px -12px var(--shade);
-}
-.btn:active {
-  transform: translateY(1px);
-  box-shadow: none;
-}
+.btn:hover { background: var(--primary-hover); }
+.btn:active { transform: scale(.97); }
 
 /* Secondary: ink outline and ink text, light tint on hover */
 .btn-outline {
   background: transparent;
   color: var(--ink);
-  box-shadow: inset 0 0 0 1.5px var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
 }
-.btn-outline:hover {
-  background: var(--tint);
-  box-shadow: inset 0 0 0 1.5px var(--ink), 0 10px 20px -12px var(--shade);
-}
-.btn-outline:active { box-shadow: inset 0 0 0 1.5px var(--ink); }
+.btn-outline:hover { background: var(--tint); }
 .btn-sm {
   min-height: 44px;
-  padding: 0 24px;
-  font-size: 1rem;
+  padding: 0 var(--space-2);
+  font-size: var(--fs-small);
 }
 
 
-/* ---------- 5. Hero + gumball machine ---------- */
+/* ---------- 6. Hero + gumball machine ---------- */
 .hero {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding: 72px 0 96px;
-  border-bottom: 1px solid var(--line);
+  padding: var(--space-6) 0 var(--section-y);
 }
-
-/* Soft colored shapes drifting behind the hero */
 
 .hero .container {
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 48px;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: var(--space-5);
   align-items: center;
 }
 .hero h1 {
-  font-size: var(--fs-h1);
+  font-size: var(--fs-display);
+  font-weight: var(--fw-display-bold);
+  line-height: 1;
+  letter-spacing: var(--ls-display);
 }
 .tagline {
-  color: var(--heading);
   width: fit-content;      /* the wipe runs across the text, not the whole column */
-  margin: 20px 0 0;
+  margin-top: var(--space-3);
   padding-bottom: .3em;    /* room for the squiggle inside the box */
-  font-size: clamp(1.375rem, 1.15rem + 1vw, 1.75rem);
-  line-height: 1.4;
+  font-size: var(--fs-lead);
+  line-height: 1.35;
+  letter-spacing: -.01em;
+  color: var(--heading);
 }
 .tagline em {
   position: relative;
   display: inline-block;
   font-style: normal;
-  font-weight: 700;
+  font-weight: var(--fw-strong);
   color: var(--heading);
-  padding-bottom: .12em;
 }
 /* Hand-drawn pink squiggle that sits below the words (never through them) */
 .tagline em::after {
   content: "";
   position: absolute;
   left: 0;
-  right: .1em;
-  bottom: -.22em;
-  height: .32em;
+  right: .05em;
+  bottom: -.24em;
+  height: .28em;
   background: var(--accent);
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M3 9 C30 3 55 3 80 8 S130 13 155 7 S190 4 197 8' fill='none' stroke='black' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 0 0 / 100% 100%;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M3 9 C30 3 55 3 80 8 S130 13 155 7 S190 4 197 8' fill='none' stroke='black' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 0 0 / 100% 100%;
@@ -485,42 +497,34 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
 .js .tagline[data-reveal].is-visible em::after {
   animation: draw-under .7s var(--ease-out) calc(var(--d, 0ms) + 800ms) forwards;
 }
-@keyframes wipe-in {
-  from { --wipe: -25%; transform: translateX(-10px); }
-  to   { --wipe: 100%; transform: none; }
-}
-@keyframes draw-under { to { clip-path: inset(0 0 0 0); } }
+
+/* Role tags: pills, tint background, no dots */
 .roles {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin: 24px 0 0;
+  gap: var(--space-1);
+  margin: var(--space-3) 0 0;
   padding: 0;
   list-style: none;
 }
 .roles li {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 14px;
-  border-radius: 999px;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--pill);
   background: var(--tint);
-  font-size: .9375rem;
-  font-weight: 700;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-strong);
+  letter-spacing: var(--ls-label);
   color: var(--ink);
-  transition: transform .4s var(--ease-spring), background .3s ease;
 }
-.roles li:hover { transform: translateY(-3px) rotate(-2deg); background: var(--line); }
 .intro {
-  max-width: 52ch;
-  margin: 18px 0 0;
+  margin-top: var(--space-3);
   color: var(--ink-soft);
 }
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 36px;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
 }
 
 .machine {
@@ -535,7 +539,6 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
 .globe-shine  {
   fill: none;
   stroke: var(--line);
-  opacity: 1;
   stroke-width: 5;
   stroke-linecap: round;
   stroke-dasharray: 160;
@@ -548,12 +551,21 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
 .chute        { fill: var(--white); stroke: var(--machine-line); stroke-width: 3; }
 .machine-base { fill: var(--machine); stroke: var(--machine-line); stroke-width: 4; }
 
-/* Gloss and shade overlays for the SVG gumballs (gradients are in index.html) */
+/* Gumballs inside the globe (drawn by main.js) */
+.gumball {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform .45s ease-in, opacity .45s ease-in;
+}
+.gumball.is-gone { transform: translateY(40px) scale(.6); opacity: 0; }   /* rolled out of the jar */
+.gumball.is-new  { animation: gumball-in .7s var(--ease-spring) backwards; }
+.machine.is-shaking .gumball:not(.is-gone) { animation: jostle .55s ease-in-out; }
+
 /* Stops for the machine's gumball gradients (created in main.js, one per color):
    the base color, darkening slightly toward the bottom right. A shared white
    gloss is laid on top of every ball. */
-.gb-stop-base { stop-color: var(--flavor); }
-.gb-stop-lo   { stop-color: color-mix(in oklab, var(--flavor) var(--gb-lo-amount), var(--gb-lo-with)); }
+.gb-stop-base  { stop-color: var(--flavor); }
+.gb-stop-lo    { stop-color: color-mix(in oklab, var(--flavor) var(--gb-lo-amount), var(--gb-lo-with)); }
 .gb-stop-gloss { stop-color: var(--white); }
 /* White gumballs: faint warm-gray outline so they read against the white globe */
 .gumball.is-white circle:first-child { stroke: var(--gum-white-shade); stroke-width: 1.5; }
@@ -571,7 +583,7 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
   background: var(--white);
   cursor: pointer;
   transform: translate(-50%, -50%);
-  transition: rotate .9s var(--ease-spring), scale .3s var(--ease-spring);
+  transition: rotate .9s var(--ease-spring), scale var(--t-fast) ease-out;
 }
 .knob::before {
   content: "";
@@ -597,12 +609,9 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
 /* Nudges a few times to say "click me", then stops */
 .knob.is-idle { animation: knob-nudge 4s ease-in-out 2.4s 3; }
 .knob.is-idle::after { animation: ring 2s ease-out 2.4s 3; }
-.knob:hover { scale: 1.08; }
-.knob:focus-visible {
-  outline: 4px solid var(--focus);       /* 4.02:1 against the ink body */
-  outline-offset: 4px;
-}
-.knob:active { scale: .94; }
+.knob:hover { scale: 1.06; }
+.knob:active { scale: .96; }
+.knob:focus-visible { outline-offset: 4px; }   /* pink ring is 4.02:1 against the ink body */
 
 .turn-hint {
   position: absolute;
@@ -616,8 +625,8 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
   display: block;
   width: 90px;
   fill: none;
-  stroke: currentColor;   /* ink, from .turn-hint */
-  stroke-width: 2.5;
+  stroke: currentColor;
+  stroke-width: 2;
   stroke-linecap: round;
 }
 .turn-hint path {
@@ -626,213 +635,192 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
 }
 .turn-hint span {
   display: block;
-  margin: 2px 0 0 50px;
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-size: 1.25rem;
-  font-weight: 600;
+  margin: 2px 0 0 50px;    /* position under the arrow, not spacing */
+  font-size: var(--fs-small);
+  font-weight: var(--fw-strong);
   white-space: nowrap;
   transform: rotate(-4deg);
-  animation: hint-in .6s var(--ease-spring) 2s backwards;
+  animation: hint-in .5s var(--ease-out) 2s backwards;
 }
 
 
-/* ---------- 6. Selected work ---------- */
+/* ---------- 7. Selected work ---------- */
 .work,
 .contact { scroll-margin-top: var(--header-h); }
 
-.work { padding: 72px 0 96px; }
-
-.section-title { font-size: var(--fs-h2); }
-
-.flavor-label {
-  margin: 18px 0 0;
-  font-weight: 700;
-  color: var(--ink-soft);
+.work {
+  padding: var(--section-y) 0;
+  border-top: 1px solid var(--line);
 }
+
+.flavor-label { margin-top: var(--space-3); }
 
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 16px;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
 }
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 9px 20px;
-  border: 2px solid transparent;
-  border-radius: 999px;
+  gap: var(--space-1);
   min-height: 44px;
+  padding: 0 var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--pill);
   background: var(--tint);
-  color: var(--heading);
+  color: var(--ink);
   font-family: var(--font-body);
   font-size: var(--fs-small);
-  font-weight: 700;
+  font-weight: var(--fw-strong);
+  letter-spacing: var(--ls-label);
   cursor: pointer;
   transition:
-    transform .4s var(--ease-spring),
-    background .3s ease,
-    color .3s ease,
-    border-color .3s ease,
-    box-shadow .3s ease;
+    background var(--t-fast) ease-out,
+    color var(--t-fast) ease-out,
+    border-color var(--t-fast) ease-out,
+    transform var(--t-fast) ease-out;
 }
-.chip:hover { transform: translateY(-3px); border-color: var(--line); }
-.chip:active { transform: scale(.94); }
+.chip:hover { border-color: var(--border-hover); }
+.chip:active { transform: scale(.97); }
 /* Selected filter: filled ink plus a check mark */
 .chip[aria-pressed="true"] {
   background: var(--ink);
   border-color: var(--ink);
   color: var(--white);            /* 18.21:1 */
-  box-shadow: 0 8px 18px -10px var(--shade);
 }
 .chip[aria-pressed="true"]::after {
   content: "✓";
   content: "✓" / "";   /* decorative: screen readers rely on aria-pressed */
-  margin-left: 2px;
-  font-weight: 700;
 }
-
 .chips.is-ready .chip {
-  animation: pop-in .55s var(--ease-spring) backwards;
-  animation-delay: calc(var(--i, 0) * 70ms);
+  animation: fade-up .4s var(--ease-out) backwards;
+  animation-delay: calc(var(--i, 0) * 40ms);
 }
 
 /* "Showing 3 projects in UX research", read out by screen readers */
 .filter-status {
   min-height: 1.6em;
-  margin: 20px 0 0;
+  margin-top: var(--space-3);
   font-size: var(--fs-small);
-  font-weight: 600;
   color: var(--ink-soft);
 }
 .start-with {
-  min-height: 1.55em;
-  margin: 4px 0 16px;
-  font-weight: 700;
+  min-height: 1.6em;
+  margin: var(--space-1) 0 var(--space-3);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-strong);
   color: var(--ink-soft);
 }
-.start-with.swap { animation: fade-up .45s var(--ease-out); }
+.start-with.swap { animation: fade-up .3s var(--ease-out); }
 
 .tray { position: relative; }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 22px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
 }
 
+/* Cards: white, 1px border, the whole card is a link. Hover: small lift and darker border. */
 .card {
-  --rx: 0deg;
-  --ry: 0deg;
   --lift: 0px;
   --s: 1;
   position: relative;
-  padding: 26px 28px 28px;
+  padding: var(--space-4);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
-  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(var(--lift)) scale(var(--s));
+  cursor: pointer;
+  transform: translateY(var(--lift)) scale(var(--s));
   transition:
-    opacity .5s ease,
-    filter .5s ease,
-    border-color .4s ease,
-    transform .25s ease-out,
-    box-shadow .4s ease;
+    opacity .3s ease-out,
+    border-color var(--t-fast) ease-out,
+    transform var(--t-fast) ease-out;
 }
 .card:hover {
-  --lift: -4px;
-  border-color: color-mix(in srgb, var(--ink) 22%, var(--line));
-  box-shadow: 0 18px 30px -18px var(--shade);
+  --lift: -3px;
+  border-color: var(--border-hover);
 }
-.card.is-blowing { --s: .96; }
+.card.is-blowing { --s: .98; }
 .card-head {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--space-2);
 }
 .card-ball {
-  --gb: 54px;
+  --gb: 52px;
   flex: none;
   width: var(--gb);
   height: var(--gb);
 }
 .card-ball.pop { animation: pop .5s var(--ease-spring); }
-.card:hover .card-ball { animation: roll .9s var(--ease-out); }
-.card-title { font-size: var(--fs-h3); }
+.card-year {
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+}
 
 /* Category labels on each card: plain text */
 .card-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 8px;
-  margin: 8px 0 0;
+  gap: 2px var(--space-1);
+  margin: var(--space-1) 0 0;
   padding: 0;
   list-style: none;
-  font-size: .8125rem;
-  font-weight: 700;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-strong);
+  letter-spacing: var(--ls-label);
   color: var(--ink-soft);
 }
 .card-tags li { display: inline-flex; align-items: center; }
 /* Dot separator sits after each label, so a wrap never starts a line with it */
 .card-tags li:not(:last-child)::after {
   content: "·";
-  margin-left: 8px;
-  color: var(--ink-soft);
+  margin-left: var(--space-1);
 }
 
 /* "In progress" badge: delete the <span class="status-badge" data-status="draft"> to remove it */
 .status-badge[data-status="draft"] {
   display: inline-block;
-  margin-left: 8px;
-  padding: 1px 9px;
+  margin-left: var(--space-1);
+  padding: 0 var(--space-1);
   border: 1px solid var(--accent);
-  border-radius: 999px;
+  border-radius: var(--pill);
   background: var(--surface);
   color: var(--ink);                     /* 18.21:1 */
-  font-family: var(--font-body);
-  font-size: .75rem;
-  font-weight: 700;
-  letter-spacing: .03em;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-strong);
+  letter-spacing: var(--ls-label);
+  line-height: 1.6;
   vertical-align: 1px;
 }
-.case .status-badge[data-status="draft"] { margin: 14px 0 0; }
+.case .status-badge[data-status="draft"] { margin: var(--space-2) 0 0; }
 
-/* Keyboard focus: ring around the whole card when its link is focused */
-.card:focus-within {
-  outline: 3px solid var(--focus);
-  outline-offset: 4px;
-}
-@supports selector(:has(*)) {
-  .card:focus-within { outline: none; }
-  .card:has(.card-link:focus-visible) {
-    outline: 3px solid var(--focus);
-    outline-offset: 4px;
-  }
-  .card-link:focus-visible { outline: none; }
-}
-.card-year { margin: 2px 0 0; font-size: .875rem; color: var(--ink-soft); }
 .card-headline {
-  margin: 26px 0 0;
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: clamp(1.0625rem, 1rem + .4vw, 1.25rem);
+  margin-top: var(--space-3);
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-strong);
   line-height: 1.4;
+  letter-spacing: -.01em;
 }
-.card-meta { margin: 16px 0 0; font-size: .9375rem; color: var(--ink-soft); }
+.card-meta {
+  margin-top: var(--space-1);
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+}
 .card-link {
   display: inline-block;
+  margin-top: var(--space-3);
   color: var(--link);
-  margin-top: 12px;
-  font-weight: 700;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-strong);
   text-decoration: none;
 }
-.card-link .arrow {
-  display: inline-block;
-  transition: transform .4s var(--ease-spring);
-}
-.card:hover .card-link .arrow { transform: translateX(6px); }
+.card-link .arrow { display: inline-block; transition: transform var(--t-fast) ease-out; }
+.card:hover .card-link .arrow,
+.card-link:focus-visible .arrow { transform: translateX(4px); }
 /* Makes the whole card clickable */
 .card-link::after {
   content: "";
@@ -841,219 +829,277 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
   border-radius: var(--radius);
 }
 
+/* Keyboard focus: ring around the whole card when its link is focused */
+.card:focus-within {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+@supports selector(:has(*)) {
+  .card:focus-within { outline: none; }
+  .card:has(.card-link:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+  .card-link:focus-visible { outline: none; }
+}
+
 /* Filter: cards that don't match are hidden (main.js adds the hidden attribute) */
 .card[hidden] { display: none !important; }
 
-/* Cards slide in when the work section scrolls into view (only when JavaScript is running) */
+/* Cards fade in when the work section scrolls into view (only when JavaScript is running) */
 .js .card { opacity: 0; visibility: hidden; }
 .js .card.is-in {
   opacity: 1;
   visibility: visible;
-  animation: card-in .6s var(--ease-spring) backwards;
-  animation-delay: calc(var(--i, 0) * 90ms);
+  animation: card-in .5s var(--ease-out) backwards;
+  animation-delay: calc(var(--i, 0) * 70ms);
 }
-/* A gumball from the machine lands on the card */
-/* After the first slide-in, never replay it (e.g. when a filter shows the card again) */
+/* After the first fade-in, never replay it (e.g. when a filter shows the card again) */
 .js .card.is-in.is-settled { animation: none; }
-.js .card.is-in.is-hit { animation: card-hit .45s var(--ease-spring); }
+/* A gumball from the machine lands on the card */
+.js .card.is-in.is-hit { animation: card-hit .35s var(--ease-out); }
 .js .chips:not(.is-ready) { visibility: hidden; }
 
 
-/* ---------- 7. Contact + footer ---------- */
+/* ---------- 8. Contact + footer ---------- */
 .contact {
-  padding: 88px 0;
+  padding: var(--section-y) 0;
   background: var(--surface);
   border-top: 1px solid var(--line);
-  overflow: hidden;
 }
-.contact p { max-width: 52ch; margin: 14px 0 0; color: var(--ink-soft); }
+.contact p { margin-top: var(--space-2); color: var(--ink-soft); }
+/* Text on the left (same left edge as every other section), photo on the right */
 .contact-inner {
   display: flex;
   align-items: center;
-  gap: clamp(32px, 6vw, 72px);
+  justify-content: space-between;
+  gap: var(--space-5);
 }
-
-/* Headshot with a thin ink ring */
 .headshot-wrap {
-  position: relative;
+  order: 2;
   flex: none;
-  width: clamp(170px, 20vw, 240px);
+  width: clamp(160px, 18vw, 220px);
   aspect-ratio: 1;
-}
-.headshot-wrap::before {
-  content: "";
-  position: absolute;
-  inset: -8px;
+  padding: var(--space-1);
+  border: 1px solid var(--line);
   border-radius: 50%;
-  background: var(--ink);
-}
-.headshot-wrap::after {
-  content: "";
-  position: absolute;
-  inset: -6px;
-  border-radius: 50%;
-  background: var(--surface);
 }
 .headshot {
-  position: relative;
-  z-index: 1;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
   border-radius: 50%;
-  border: 0;
-  transition: transform .6s var(--ease-spring);
 }
-.headshot-wrap:hover .headshot { transform: scale(1.05) rotate(-3deg); }
 
 .site-footer {
-  padding: 28px 0;
-  font-size: .875rem;
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--line);
+  font-size: var(--fs-small);
   color: var(--ink-soft);
 }
 
 
-/* ---------- 8. Case study pages ---------- */
-.case { padding: 40px 0 80px; }
+/* ---------- 9. Case study pages ----------
+   Text sits in one comfortable reading column; images run wider. */
+.case { padding: var(--space-5) 0 var(--section-y); }
 
 .back-link {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-1);
   min-height: 44px;
-  font-size: .9375rem;
-  font-weight: 700;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-strong);
   color: var(--link);
   text-decoration: none;
 }
-.back-link .arrow { transition: transform .4s var(--ease-spring); }
-.back-link:hover,
-.back-link:focus-visible { text-decoration: underline; text-underline-offset: .18em; }
-.back-link:hover .arrow { transform: translateX(-5px); }
+.back-link .arrow { display: inline-block; transition: transform var(--t-fast) ease-out; }
+.back-link:hover .arrow,
+.back-link:focus-visible .arrow { transform: translateX(-4px); }
+.back-link:hover { text-decoration: underline; text-underline-offset: .2em; }
 
 .case-title {
   display: flex;
   align-items: center;
-  gap: 18px;
-  margin-top: 32px;
-  font-size: var(--fs-h1);
+  gap: var(--space-2);
+  margin-top: var(--space-3);
 }
 .case-title .card-ball {
-  --gb: 46px;
-  animation: ball-spin-in 1s var(--ease-spring) .25s backwards;
+  --gb: 44px;
+  animation: ball-spin-in .9s var(--ease-spring) .2s backwards;
 }
 .case-sub {
-  margin: 14px 0 0;
-  font-size: 1.375rem;
+  margin-top: var(--space-2);
+  font-size: var(--fs-lead);
+  line-height: 1.4;
   color: var(--ink-soft);
 }
 
+/* Reading column */
+.case-title,
+.case-sub,
+.facts,
+.case-section > h2,
+.case-section > p,
+.case-section > ul,
+.case-section > .stats,
+.with-aside > * { max-width: var(--read); }
+
 .facts {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  margin: 30px 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: var(--space-5) 0;
 }
 .fact {
-  padding: 18px 20px;
-  border-radius: 12px;
-  background: var(--surface);
+  padding: var(--space-2) var(--space-3);
   border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
 }
 .fact dt {
-  font-size: .75rem;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-strong);
   letter-spacing: .06em;
   text-transform: uppercase;
   color: var(--ink-soft);
 }
-.fact dd { margin: 6px 0 0; font-weight: 700; }
+.fact dd { margin: 4px 0 0; font-size: var(--fs-small); font-weight: var(--fw-strong); }
 
-.case-hero { margin: 0; }
-.case-hero img,
-.gallery img { width: 100%; border-radius: 12px; }
-
-/* Gray "X" boxes with a moving shimmer. Swap each one for an <img> when you have screenshots. */
-.placeholder-img {
-  position: relative;
-  overflow: hidden;
-  display: grid;
-  place-items: center;
-  aspect-ratio: 5 / 2;
-  border-radius: 12px;
-  background:
-    linear-gradient(to top right, transparent calc(50% - 1px), var(--surface), transparent calc(50% + 1px)),
-    linear-gradient(to bottom right, transparent calc(50% - 1px), var(--surface), transparent calc(50% + 1px)),
-    var(--tint);
-  font-size: .875rem;
-  font-weight: 700;
+.case-section { margin-top: var(--space-6); }
+.case-section h2 { margin-bottom: var(--space-2); }
+.case-section p + p { margin-top: var(--space-2); }
+.case-section ul { list-style: none; padding: 0; margin: var(--space-2) 0 0; }
+.case-section ul li { position: relative; padding-left: var(--space-3); }
+.case-section ul li + li { margin-top: var(--space-1); }
+.case-section ul li::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: .65em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink);
 }
-.case-section { margin-top: 52px; }
-.case-section h2 { margin-bottom: 14px; font-size: var(--fs-h2); }
-.case-section p { max-width: 65ch; margin: 0 0 1em; }
 
+/* Design decisions + guiding principle: stacked in the reading column */
 .with-aside {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 32px;
-  align-items: start;
+  gap: var(--space-3);
 }
 .callout {
-  padding: 18px 20px;
+  padding: var(--space-3);
   border: 1px solid var(--line);
-  border-left: 4px solid var(--ink);
-  border-radius: 12px;
+  border-left: 3px solid var(--ink);
+  border-radius: var(--radius);
   background: var(--surface);
-  transition: transform .4s var(--ease-spring), box-shadow .3s ease;
 }
-.callout:hover { transform: translateY(-4px) rotate(-1deg); box-shadow: 0 18px 30px -20px var(--shade); }
-.callout h3 {
-  margin-bottom: 8px;
-  font-size: 1.125rem;
-}
-.callout p { margin: 0; font-size: .9375rem; }
+.callout h3 { margin-bottom: var(--space-1); }
+.callout p { font-size: var(--fs-small); color: var(--ink-soft); }
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
 }
 .stat {
-  padding: 24px;
-  border-radius: 14px;
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
   background: var(--surface);
-  transition: transform .4s var(--ease-spring), background .3s ease, color .3s ease;
 }
-.stat { border: 1px solid var(--line); }
-.stat:hover { transform: translateY(-5px); border-color: color-mix(in srgb, var(--ink) 22%, var(--line)); box-shadow: 0 16px 30px -22px var(--shade); }
-.stat-num { display: block; color: var(--heading); font-family: var(--font-display); font-size: 2.5rem; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
-.stat-label { display: block; margin-top: 12px; font-size: .875rem; color: var(--ink-soft); }
+.stat-num {
+  display: block;
+  color: var(--heading);
+  font-family: var(--font-display);
+  font-size: var(--fs-stat);
+  font-weight: var(--fw-display);
+  line-height: 1;
+  letter-spacing: var(--ls-heading);
+  font-variant-numeric: tabular-nums;
+}
+.stat-label { display: block; margin-top: var(--space-1); font-size: var(--fs-small); color: var(--ink-soft); }
 
+.case-hero { margin-top: var(--space-5); }
 .gallery {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
 }
-.gallery .placeholder-img { aspect-ratio: 16 / 9; }
 
 .next-project {
-  margin-top: 60px;
-  padding-top: 28px;
+  margin-top: var(--space-7);
+  padding-top: var(--space-4);
   border-top: 1px solid var(--line);
   text-align: right;
 }
-.next-project a { display: inline-block; padding: 10px 0; color: var(--link); font-weight: 700; text-decoration: none; }
-.next-project .arrow { display: inline-block; transition: transform .4s var(--ease-spring); }
-.next-project a:hover .arrow { transform: translateX(8px); }
-.next-project a:hover,
-.next-project a:focus-visible { text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 3px; text-underline-offset: 5px; }
+.next-project a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 44px;
+  color: var(--link);
+  font-weight: var(--fw-strong);
+  text-decoration: none;
+}
+.next-project .arrow { display: inline-block; transition: transform var(--t-fast) ease-out; }
+.next-project a:hover .arrow,
+.next-project a:focus-visible .arrow { transform: translateX(4px); }
+.next-project a:hover { text-decoration: underline; text-underline-offset: .2em; }
 
 /* Playground page */
-.page-intro { padding: 64px 0 24px; }
-.page-intro p { max-width: 52ch; color: var(--ink-soft); }
+.page-intro { padding: var(--section-y) 0 var(--space-3); }
+.page-intro p { margin-top: var(--space-2); color: var(--ink-soft); }
 
 
-/* ---------- 9. Gumball flight + bubble transition ---------- */
+/* ---------- 10. Image frames + captions ----------
+   One frame style for case study images and future card thumbnails:
+   <figure class="figure">
+     <div class="frame"><img src="images/example.png" alt="..."></div>
+     <figcaption class="caption">What the image shows</figcaption>
+   </figure>
+   For a note, use <figcaption class="caption is-note">Data shown is illustrative.</figcaption>
+   For a small thumbnail inside a card, add "is-compact": <div class="frame is-compact"> */
+.figure { margin: 0; }
+.frame {
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--tint);
+}
+.frame.is-compact { padding: var(--space-2); }
+.frame > img,
+.frame > .placeholder-img {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-inner);
+  background: var(--surface);
+}
+.caption {
+  margin-top: var(--space-1);
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+}
+.caption.is-note { font-style: italic; }
+
+/* Gray "X" boxes. Swap each one for an <img> when you have screenshots. */
+.placeholder-img {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-inner);
+  background:
+    linear-gradient(to top right, transparent calc(50% - .5px), var(--line), transparent calc(50% + .5px)),
+    linear-gradient(to bottom right, transparent calc(50% - .5px), var(--line), transparent calc(50% + .5px)),
+    var(--surface);
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+}
+.case-hero .placeholder-img { aspect-ratio: 2 / 1; }
+
+
+/* ---------- 11. Gumball flight + bubble transition ---------- */
 .flying-ball {
   position: absolute;
   top: 0;
@@ -1110,8 +1156,7 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
   pointer-events: none;
   box-shadow:
     inset -8px -12px 22px var(--shade),
-    inset 6px 8px 16px color-mix(in srgb, var(--white) 25%, transparent),
-    0 18px 36px -18px var(--shade);
+    inset 6px 8px 16px color-mix(in srgb, var(--white) 25%, transparent);
   will-change: transform, border-radius;
 }
 .is-leaving body { pointer-events: none; }
@@ -1159,14 +1204,17 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
 .pop-cover.is-popping   { animation: tear .3s cubic-bezier(.2, .75, .3, 1) forwards; }
 
 
-/* ---------- 10. Keyframes ---------- */
-@keyframes header-in   { from { transform: translateY(-100%); } }
-@keyframes char-in     { from { opacity: 0; transform: translateY(.7em) rotate(10deg) scale(.6); } }
-@keyframes char-jump   { 40% { transform: translateY(-.25em) rotate(-6deg); } }
-@keyframes fade-up     { from { opacity: 0; transform: translateY(8px); } }
-@keyframes pop-in      { from { opacity: 0; transform: scale(.6); } }
+/* ---------- 12. Keyframes ---------- */
+@keyframes char-in     { from { opacity: 0; transform: translateY(.5em) rotate(6deg) scale(.8); } }
+@keyframes fade-up     { from { opacity: 0; transform: translateY(6px); } }
+@keyframes pop-in      { from { opacity: 0; transform: scale(.8); } }
 @keyframes draw        { from { stroke-dashoffset: 160; } }
-@keyframes hint-in     { from { opacity: 0; transform: translateY(10px) rotate(-12deg) scale(.7); } }
+@keyframes hint-in     { from { opacity: 0; transform: translateY(6px) rotate(-4deg); } }
+@keyframes wipe-in {
+  from { --wipe: -25%; transform: translateX(-10px); }
+  to   { --wipe: 100%; transform: none; }
+}
+@keyframes draw-under  { to { clip-path: inset(0 0 0 0); } }
 @keyframes gumball-in {
   0%  { opacity: 0; transform: translateY(-160px); }
   60% { opacity: 1; transform: translateY(6px); }
@@ -1193,24 +1241,18 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
   100% { opacity: 0; transform: scale(1.7); }
 }
 @keyframes card-in {
-  0%   { transform: perspective(900px) translateY(18px) scale(.9); }
-  100% { transform: perspective(900px) translateY(0) scale(1); }
+  from { opacity: 0; transform: translateY(12px); }
 }
 @keyframes card-hit {
-  40% { transform: perspective(900px) translateY(4px) scale(.985); }
+  40% { transform: translateY(3px) scale(.99); }
 }
 @keyframes pop {
   0%   { transform: scale(.4); }
-  60%  { transform: scale(1.2); }
+  60%  { transform: scale(1.15); }
   100% { transform: scale(1); }
 }
-@keyframes roll {
-  from { transform: rotate(0); }
-  to   { transform: rotate(360deg); }
-}
-@keyframes spin  { to { transform: rotate(360deg); } }
 @keyframes ball-spin-in {
-  from { opacity: 0; transform: translateX(-60px) rotate(-360deg) scale(.4); }
+  from { opacity: 0; transform: translateX(-40px) rotate(-360deg) scale(.5); }
 }
 @keyframes strain {
   to { transform: scale(1.012); opacity: .9; }
@@ -1222,49 +1264,50 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
 }
 
 
-/* ---------- 11. Responsive ---------- */
-@media (max-width: 860px) {
-  .hero { padding: 48px 0 64px; }
+/* ---------- 13. Responsive ---------- */
+@media (max-width: 900px) {
   .hero .container { grid-template-columns: 1fr; }
   .grid,
-  .with-aside,
   .gallery { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {
-  :root { --header-h: 64px; }
-  .site-header .container { flex-wrap: wrap; padding: 12px 0; gap: 12px; }
-  .site-nav { gap: 18px; font-size: .9375rem; }
+  :root {
+    --gutter: var(--space-2);
+    --header-h: 64px;
+  }
+  .hero { padding-top: var(--space-5); }
+  .site-header .container { flex-wrap: wrap; padding: var(--space-1) 0; gap: var(--space-1) var(--space-2); }
+  .site-nav { gap: var(--space-2); }
   .machine { width: min(100%, 260px); }
   .turn-hint { position: static; text-align: center; }
   .turn-hint svg { display: none; }
-  .turn-hint span { margin: 8px 0 0; }
+  .turn-hint span { margin: var(--space-1) 0 0; }
   .facts,
   .stats { grid-template-columns: 1fr; }
-  .card { padding: 22px; }
-  .contact-inner { flex-direction: column; align-items: flex-start; }
+  .card { padding: var(--space-3); }
+  .frame { padding: var(--space-2); }
+  .contact-inner { flex-direction: column; align-items: flex-start; gap: var(--space-4); }
+  .headshot-wrap { order: 0; }
 }
 
 
-/* ---------- 12. Reduced motion ---------- */
+/* ---------- 14. Reduced motion ---------- */
 /* For people who ask their system for less motion. js/main.js also skips:
    the gumball drop (cards just appear), the bubble page transition, the
-   letter-by-letter headings, the card tilt and the filter animation. */
+   letter-by-letter headings and the filter animation. */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .char,
   .tagline,
   .tagline em::after,
-  .knob,
-  .headshot-wrap::before { animation: none !important; }
+  .knob { animation: none !important; }
   .tagline { -webkit-mask-image: none !important; mask-image: none !important; }
   .tagline em::after { clip-path: none !important; }
   .flying-ball,
   .bubble,
   .pop-cover,
   .is-arriving body::after { display: none !important; }
-  .brand:hover .brand-photo,
-  .headshot-wrap:hover .headshot { transform: none; }
   *, *::before, *::after {
     animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;
@@ -1273,11 +1316,10 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
     transition-delay: 0ms !important;
   }
   .js [data-reveal] { opacity: 1; transform: none; }
-  .card:hover { --lift: 0px; --rx: 0deg; --ry: 0deg; }
-  .btn:hover,
+  .card:hover { --lift: 0px; }
+  .brand:hover .brand-photo,
   .btn:active,
-  .chip:hover,
-  .roles li:hover,
-  .stat:hover,
-  .callout:hover { transform: none; }
+  .chip:active,
+  .knob:hover,
+  .knob:active { transform: none; scale: none; }
 }

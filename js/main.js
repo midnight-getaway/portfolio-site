@@ -3,15 +3,14 @@
    main.js
    ---------------------------------------------------------
    1. Helpers
-   2. Header shadow on scroll
+   2. Header border on scroll
    3. Bouncy letters (data-split)
    4. Scroll-reveal (data-reveal)
    5. Fill the gumball machine
    6. Turn the knob: gumballs roll into the project cards
    7. "Filter by type" filter
-   8. Card tilt
-   9. Count-up numbers on case studies
-   10. Bubble transition: blow up a bubble, then pop it on the next page
+   8. Count-up numbers on case studies
+   9. Bubble transition: blow up a bubble, then pop it on the next page
    ========================================================= */
 (function () {
   "use strict";
@@ -19,7 +18,6 @@
   /* ---------- 1. Helpers ---------- */
   var root = document.documentElement;
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  var canHover = window.matchMedia("(hover: hover)");
   // Gumball colors: classic candy. The colors live in the --gum-* variables in
   // styles.css. Decorative only: categories don't have colors.
   var MAIN_TONES = ["grape", "blue", "green", "yellow", "pink", "white"];   // about 14 to 15% each
@@ -39,7 +37,7 @@
   function removeStore(key) { try { sessionStorage.removeItem(key); } catch (e) { /* ignore */ } }
 
 
-  /* ---------- 2. Header shadow on scroll ---------- */
+  /* ---------- 2. Header border on scroll ---------- */
   var header = $(".site-header");
   if (header) {
     var onScroll = function () { header.classList.toggle("is-scrolled", window.scrollY > 8); };
@@ -312,7 +310,7 @@
     applyFilter(currentFlavor);
   }
 
-  // Where an element sits on the page, ignoring hover tilts and slide-ins
+  // Where an element sits on the page, ignoring hover lifts and slide-ins
   function pagePosition(el) {
     var x = 0, y = 0, node = el;
     while (node) {
@@ -571,25 +569,7 @@
   });
 
 
-  /* ---------- 8. Card tilt ---------- */
-  if (canHover.matches && !reduceMotion.matches) {
-    cards.forEach(function (card) {
-      card.addEventListener("pointermove", function (e) {
-        var r = card.getBoundingClientRect();
-        var px = (e.clientX - r.left) / r.width - 0.5;
-        var py = (e.clientY - r.top) / r.height - 0.5;
-        card.style.setProperty("--ry", (px * 8).toFixed(2) + "deg");
-        card.style.setProperty("--rx", (-py * 8).toFixed(2) + "deg");
-      });
-      card.addEventListener("pointerleave", function () {
-        card.style.removeProperty("--rx");
-        card.style.removeProperty("--ry");
-      });
-    });
-  }
-
-
-  /* ---------- 9. Count-up numbers ---------- */
+  /* ---------- 8. Count-up numbers ---------- */
   // "~1,000" counts up from 0. Placeholders like "XX%" are left alone.
   function countUp(el) {
     var match = el.textContent.match(/^([^\d]*)([\d,]+(?:\.\d+)?)(.*)$/);
@@ -618,7 +598,7 @@
   revealCallbacks.push(function (el) { $$(".stat-num", el).forEach(countUp); });
 
 
-  /* ---------- 10. Bubble transition ---------- */
+  /* ---------- 9. Bubble transition ---------- */
   // Any link with data-bubble blows up a bubblegum bubble, then opens the page.
   document.addEventListener("click", function (e) {
     var link = e.target.closest("a[data-bubble]");

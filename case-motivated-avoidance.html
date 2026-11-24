@@ -38,7 +38,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 <script src="js/main.js" defer></script>
 </head>
@@ -79,10 +79,15 @@
       <div class="fact" data-reveal style="--d: 550ms"><dt>Tools</dt><dd>[Survey tool · analysis]</dd></div>
     </dl>
 
-    <figure class="case-hero" data-reveal="scale" style="--d: 500ms">
-      <!-- Swap this placeholder for your image, for example:
-           <img src="images/motivated-avoidance-hero.jpg" alt="Describe what the screenshot shows"> -->
-      <div class="placeholder-img">Hero image / project screenshot</div>
+    <figure class="figure case-hero" data-reveal="scale" style="--d: 500ms">
+      <!-- Swap the placeholder for your image, for example:
+           <img src="images/motivated-avoidance-hero.jpg" alt="Describe what the screenshot shows">
+           Optional caption below the frame:
+           <figcaption class="caption">What the screenshot shows</figcaption>
+           or a note: <figcaption class="caption is-note">Data shown is illustrative.</figcaption> -->
+      <div class="frame">
+        <div class="placeholder-img">Hero image / project screenshot</div>
+      </div>
     </figure>
 
     <section class="case-section" data-reveal>
@@ -121,9 +126,13 @@
     <section class="case-section">
       <h2 data-reveal>Final design</h2>
       <div class="gallery">
-        <!-- Swap each placeholder for <img src="images/motivated-avoidance-1.jpg" alt="..."> -->
-        <div class="placeholder-img" data-reveal="left">Final design image 1</div>
-        <div class="placeholder-img" data-reveal="right">Final design image 2</div>
+        <!-- Swap each placeholder for <img src="images/motivated-avoidance-1.jpg" alt="...">; captions are optional -->
+        <figure class="figure" data-reveal>
+          <div class="frame"><div class="placeholder-img">Final design image 1</div></div>
+        </figure>
+        <figure class="figure" data-reveal style="--d: 100ms">
+          <div class="frame"><div class="placeholder-img">Final design image 2</div></div>
+        </figure>
       </div>
     </section>
 
