@@ -1,12 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- Gumball favicon in berry #C2418F (the berry color token). Highlight and shadow are mixed from the berry base. -->
+  <!-- Gumball favicon: pink gumball #EF6FA3 with a soft white highlight and a slightly darker pink shade. -->
   <defs>
-    <radialGradient id="ball" cx="50%" cy="50%" r="55%" fx="32%" fy="28%">
-      <stop offset="0" stop-color="#EDC6DD"/>
-      <stop offset=".42" stop-color="#C2418F"/>
-      <stop offset="1" stop-color="#922D82"/>
+    <radialGradient id="base" cx="42%" cy="40%" r="62%">
+      <stop offset="0" stop-color="#EF6FA3"/>
+      <stop offset=".52" stop-color="#EF6FA3"/>
+      <stop offset="1" stop-color="#C25683"/>
+    </radialGradient>
+    <radialGradient id="gloss" cx="32%" cy="28%" r="34%">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity=".9"/>
+      <stop offset=".4" stop-color="#FFFFFF" stop-opacity=".35"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  <circle cx="32" cy="32" r="29" fill="url(#ball)"/>
-  <circle cx="32" cy="32" r="29" fill="none" stroke="#922D82" stroke-opacity=".4" stroke-width="2"/>
+  <circle cx="32" cy="32" r="29" fill="url(#base)"/>
+  <circle cx="32" cy="32" r="29" fill="url(#gloss)"/>
+  <circle cx="32" cy="32" r="29" fill="none" stroke="#C25683" stroke-opacity=".45" stroke-width="1.5"/>
 </svg>

@@ -31,7 +31,7 @@
       var c = sessionStorage.getItem("kv-bubble");
       if (c && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
         d.classList.add("is-arriving");
-        d.style.setProperty("--arrive", "var(--cat-" + c + ")");
+        d.style.setProperty("--arrive", "var(--gum-" + c + ")");
       } else if (c) { sessionStorage.removeItem("kv-bubble"); }
     } catch (e) {}
   })(document.documentElement);
@@ -62,8 +62,8 @@
   </div>
 </header>
 
-<!-- data-color sets this page's category color: product, design, research, pm or cs (colors live in the --cat-* variables) -->
-<main id="main" class="case" data-color="pm">
+<!-- data-tone sets this page's decorative gumball color (grape, blue, green, yellow, pink, white, red or orange). Keep it the same as this project's card. -->
+<main id="main" class="case" data-tone="pink">
   <div class="container narrow">
 
     <a class="back-link" href="index.html#work" data-reveal="left"><span class="arrow" aria-hidden="true">←</span> All work</a>
@@ -87,22 +87,22 @@
 
     <section class="case-section" data-reveal>
       <h2>Problem</h2>
-      <p>[What was broken or missing, and who did it affect? Lead with the result in one sentence, then add the context.]</p>
+      <p>[What was broken or missing, and who it affected. I'll lead with the result in one sentence, then add the context.]</p>
     </section>
 
     <section class="case-section" data-reveal>
       <h2>Research</h2>
-      <p>[What you did to understand the people involved: interviews, surveys, data, observation. What did you learn?]</p>
+      <p>[What I did to understand the people involved (interviews, surveys, data, observation) and what I learned.]</p>
     </section>
 
     <section class="case-section with-aside">
       <div data-reveal>
         <h2>Design decisions</h2>
-        <p>[The two or three key choices you made and why. Connect each one back to what you learned in research.]</p>
+        <p>[The two or three key choices I made and why, each connected back to what I learned in research.]</p>
       </div>
       <aside class="callout" data-reveal="right" style="--d: 150ms">
         <h3>Guiding principle</h3>
-        <p>[Name the principle that guided this decision and explain in a sentence how you applied it.]</p>
+        <p>[The principle that guided this decision, and in a sentence, how I applied it.]</p>
       </aside>
     </section>
 
@@ -129,11 +129,11 @@
 
     <section class="case-section" data-reveal>
       <h2>What I'd do next</h2>
-      <p>[What you would test, change or measure if you had more time.]</p>
+      <p>[What I would test, change or measure if I had more time.]</p>
     </section>
 
     <nav class="next-project" aria-label="Next project" data-reveal>
-      <a href="case-crm-power-bi.html" data-bubble data-color="product">Next project: CRM to Power BI Pipeline <span class="arrow" aria-hidden="true">→</span></a>
+      <a href="case-crm-power-bi.html" data-bubble data-tone="blue">Next project: CRM to Power BI Pipeline <span class="arrow" aria-hidden="true">→</span></a>
     </nav>
 
   </div>

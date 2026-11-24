@@ -8,7 +8,7 @@
    4. Scroll-reveal (data-reveal)
    5. Fill the gumball machine
    6. Turn the knob: gumballs roll into the project cards
-   7. "Pick a flavor" filter
+   7. "Filter by type" filter
    8. Card tilt
    9. Count-up numbers on case studies
    10. Bubble transition: blow up a bubble, then pop it on the next page
@@ -20,9 +20,12 @@
   var root = document.documentElement;
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   var canHover = window.matchMedia("(hover: hover)");
-  // Category keys. Colors come from the --cat-* variables in styles.css.
-  var COLORS = ["product", "design", "research", "pm", "cs"];
-  function catColor(key) { return "var(--cat-" + key + ")"; }
+  // Gumball colors: classic candy. The colors live in the --gum-* variables in
+  // styles.css. Decorative only: categories don't have colors.
+  var MAIN_TONES = ["grape", "blue", "green", "yellow", "pink", "white"];   // about 14 to 15% each
+  var WARM_TONES = ["red", "orange"];                                      // about 6% each, never touching
+  var TONES = MAIN_TONES.concat(WARM_TONES);
+  function toneColor(key) { return "var(--gum-" + key + ")"; }
   var SVG_NS = "http://www.w3.org/2000/svg";
   var arriving = root.classList.contains("is-arriving");
 
@@ -117,9 +120,48 @@
     return c;
   }
 
+  // A "bag" of gumball colors in the right proportions for the jar:
+  // each main color about 14 to 15%, red and orange about 6% each.
+  function makeBag(total) {
+    var bag = {};
+    var warmEach = Math.max(1, Math.round(total * 0.06));
+    WARM_TONES.forEach(function (t) { bag[t] = warmEach; });
+    var rest = total - warmEach * WARM_TONES.length;
+    var each = Math.floor(rest / MAIN_TONES.length);
+    MAIN_TONES.forEach(function (t) { bag[t] = each; });
+    // Hand out the leftovers to random main colors
+    var extra = MAIN_TONES.slice().sort(function () { return Math.random() - 0.5; });
+    for (var k = 0; k < rest - each * MAIN_TONES.length; k++) { bag[extra[k]]++; }
+    return bag;
+  }
+
+  // Pick a color from the bag that doesn't match a touching neighbor, and
+  // never put red or orange next to another red or orange.
+  function drawFromBag(bag, neighbors) {
+    var warmNear = neighbors.some(function (n) { return WARM_TONES.indexOf(n) !== -1; });
+    function options(strict) {
+      var list = [];
+      Object.keys(bag).forEach(function (t) {
+        if (!bag[t]) { return; }
+        if (WARM_TONES.indexOf(t) !== -1 && warmNear) { return; }
+        if (strict && neighbors.indexOf(t) !== -1) { return; }
+        for (var c = 0; c < bag[t]; c++) { list.push(t); }   // weighted by what's left
+      });
+      return list;
+    }
+    var list = options(true);
+    if (!list.length) { list = options(false); }
+    if (!list.length) { list = Object.keys(bag).filter(function (t) { return bag[t]; }); }
+    var tone = list[Math.floor(Math.random() * list.length)];
+    bag[tone]--;
+    return tone;
+  }
+
   // animate: gumballs rain in from the top, bottom rows first
   function fillGlobe(animate, baseDelay) {
     var rows = [4, 5, 6, 7, 6, 5, 4];   // gumballs per row, top to bottom
+    var placed = {};                    // "row,col" -> color, to avoid clumps
+    var bag = makeBag(rows.reduce(function (a, b) { return a + b; }, 0));
     globe.textContent = "";
     rows.forEach(function (count, row) {
       var y = 48 + row * 33;
@@ -132,12 +174,19 @@
           g.style.animationDelay = (baseDelay || 0) + (rows.length - 1 - row) * 90 + i * 25 + "ms";
         }
 
-        // Color by grid position so touching gumballs never match:
-        // neighbors differ by 2 (same row) or by 1 and 3 (rows above/below).
+        // Touching neighbors already placed: left, upper left, upper right
         var col = Math.round((x - 36) / 19);
+        var neighbors = [placed[row + "," + (col - 2)], placed[(row - 1) + "," + (col - 1)], placed[(row - 1) + "," + (col + 1)]];
+        var tone = drawFromBag(bag, neighbors);
+        placed[row + "," + col] = tone;
+        if (tone === "white") { g.classList.add("is-white"); }
+
         var ball = makeCircle(x, y, 17);
-        ball.setAttribute("fill", "url(#gb-" + COLORS[(col + row * 3) % COLORS.length] + ")");
+        ball.setAttribute("fill", "url(#gb-" + tone + ")");
+        var gloss = makeCircle(x, y, 17);
+        gloss.setAttribute("fill", "url(#gb-gloss)");
         g.appendChild(ball);
+        g.appendChild(gloss);
         globe.appendChild(g);
       }
     });
@@ -152,38 +201,50 @@
     }
   }
 
-  // Hide the lowest n gumballs in the globe. Returns how many are left.
-  function takeFromGlobe(n) {
-    var balls = $$(".gumball:not(.is-gone)", globe);
-    balls.sort(function (a, b) {
+  // Take one gumball out of the globe for each color in the list, using the
+  // lowest gumball of that color (the one closest to the chute). If a color
+  // isn't in the jar, the lowest gumball of any color goes instead.
+  // Returns how many gumballs are left.
+  function takeFromGlobe(tones) {
+    function lowestFirst(a, b) {
       return b.firstChild.getAttribute("cy") - a.firstChild.getAttribute("cy");
+    }
+    tones.forEach(function (tone) {
+      var balls = $$(".gumball:not(.is-gone)", globe).sort(lowestFirst);
+      var match = balls.filter(function (g) {
+        return g.firstChild.getAttribute("fill") === "url(#gb-" + tone + ")";
+      })[0];
+      var ball = match || balls[0];
+      if (ball) { ball.classList.add("is-gone"); }
     });
-    balls.slice(0, n).forEach(function (g) { g.classList.add("is-gone"); });
-    return Math.max(0, balls.length - n);
+    return $$(".gumball:not(.is-gone)", globe).length;
   }
 
-  // One shaded gradient per category: a highlight in the upper left and a
-  // darker edge at the bottom right, both mixed from the category color.
+  // One gradient per color (solid base, slightly darker toward the bottom
+  // right, same hue) plus one shared soft white highlight for the upper left.
   function makeGumballGradients() {
     var defs = document.getElementById("gb-defs");
     if (!defs) { return; }
-    COLORS.forEach(function (key) {
+    function gradient(id, attrs, stops, tone) {
       var grad = document.createElementNS(SVG_NS, "radialGradient");
-      grad.setAttribute("id", "gb-" + key);
-      grad.setAttribute("cx", "50%");
-      grad.setAttribute("cy", "50%");
-      grad.setAttribute("r", "55%");
-      grad.setAttribute("fx", "32%");
-      grad.setAttribute("fy", "28%");
-      grad.setAttribute("data-color", key);   // sets --flavor for the stops
-      [["0", "gb-stop-hi"], [".42", "gb-stop-base"], ["1", "gb-stop-lo"]].forEach(function (st) {
+      grad.setAttribute("id", id);
+      Object.keys(attrs).forEach(function (a) { grad.setAttribute(a, attrs[a]); });
+      if (tone) { grad.setAttribute("data-tone", tone); }   // sets --flavor for the stops
+      stops.forEach(function (st) {
         var stop = document.createElementNS(SVG_NS, "stop");
         stop.setAttribute("offset", st[0]);
         stop.setAttribute("class", st[1]);
+        if (st[2] !== undefined) { stop.setAttribute("stop-opacity", st[2]); }
         grad.appendChild(stop);
       });
       defs.appendChild(grad);
+    }
+    TONES.forEach(function (key) {
+      gradient("gb-" + key, { cx: "42%", cy: "40%", r: "62%" },
+        [["0", "gb-stop-base"], [".52", "gb-stop-base"], ["1", "gb-stop-lo"]], key);
     });
+    gradient("gb-gloss", { cx: "32%", cy: "28%", r: "34%" },
+      [["0", "gb-stop-gloss", ".9"], [".4", "gb-stop-gloss", ".35"], ["1", "gb-stop-gloss", "0"]]);
   }
 
   if (globe) {
@@ -275,7 +336,8 @@
     machine.classList.add("is-shaking");
     setTimeout(function () { machine.classList.remove("is-shaking"); }, 600);
     var targets = cards.filter(function (card) { return !card.hidden; });
-    var left = takeFromGlobe(targets.length);
+    // Each card gets a gumball of its own color, taken from the jar
+    var left = takeFromGlobe(targets.map(function (card) { return card.getAttribute("data-tone"); }));
 
     // When someone turns the knob by hand, follow the gumballs down
     if (!revealOnLand) {
@@ -302,7 +364,7 @@
       ball.style.width = size + "px";
       ball.style.height = size + "px";
       ball.style.setProperty("--gb", size + "px");
-      ball.style.setProperty("--flavor", catColor(card.getAttribute("data-color")));
+      ball.setAttribute("data-tone", card.getAttribute("data-tone"));   // matches the card it lands on
       document.body.appendChild(ball);
 
       var flight = ball.animate([
@@ -400,7 +462,7 @@
   }
 
 
-  /* ---------- 7. "Pick a flavor" filter ---------- */
+  /* ---------- 7. "Filter by type" filter ---------- */
 
   function matches(card, flavor) {
     return flavor === "all" || card.getAttribute("data-flavors").split(" ").indexOf(flavor) !== -1;
@@ -417,7 +479,7 @@
     if (startWith) {
       startWith.textContent = shown.length
         ? "Start with: " + $(".card-title", shown[0]).textContent
-        : "Nothing in that flavor yet. Try another!";
+        : "No projects in this category yet.";
       startWith.classList.remove("swap");
       void startWith.offsetWidth;
       startWith.classList.add("swap");
@@ -570,8 +632,8 @@
   });
 
   function blowBubble(link, e) {
-    var colorEl = link.closest("[data-color]");
-    var color = colorEl ? colorEl.getAttribute("data-color") : "pm";
+    var colorEl = link.closest("[data-tone]");
+    var color = colorEl ? colorEl.getAttribute("data-tone") : "pink";
     var card = link.closest(".card");
     var origin = card ? $(".card-ball", card) : null;
     var r = origin
@@ -590,7 +652,7 @@
     var bubble = document.createElement("div");
     bubble.className = "bubble";
     bubble.setAttribute("aria-hidden", "true");
-    bubble.style.setProperty("--flavor", catColor(color));
+    bubble.style.setProperty("--flavor", toneColor(color));
     bubble.style.left = cx - size / 2 + "px";
     bubble.style.top = cy - size / 2 + "px";
     bubble.style.width = size + "px";
@@ -644,7 +706,7 @@
     var cover = document.createElement("div");
     cover.className = "pop-cover";
     cover.setAttribute("aria-hidden", "true");
-    cover.style.setProperty("--flavor", catColor(colorName));
+    cover.style.setProperty("--flavor", toneColor(colorName));
     document.body.appendChild(cover);
     root.classList.remove("is-arriving");   // the real cover takes over from the CSS one
 
@@ -654,7 +716,7 @@
   }
 
   if (arriving) {
-    var arriveColor = getStore("kv-bubble") || "pm";
+    var arriveColor = getStore("kv-bubble") || "pink";
     removeStore("kv-bubble");
     popBubble(arriveColor);
     setTimeout(startReveal, 250);

@@ -31,7 +31,7 @@
       var c = sessionStorage.getItem("kv-bubble");
       if (c && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
         d.classList.add("is-arriving");
-        d.style.setProperty("--arrive", "var(--cat-" + c + ")");
+        d.style.setProperty("--arrive", "var(--gum-" + c + ")");
       } else if (c) { sessionStorage.removeItem("kv-bubble"); }
     } catch (e) {}
   })(document.documentElement);
