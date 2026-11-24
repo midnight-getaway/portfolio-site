@@ -199,6 +199,56 @@
     }
   }
 
+  // Every spot in the jar, lowest row first (the order gumballs settle into)
+  function globeSlots() {
+    var rows = [4, 5, 6, 7, 6, 5, 4];   // gumballs per row, top to bottom
+    var slots = [];
+    rows.forEach(function (count, row) {
+      var y = 48 + row * 33;
+      var x0 = 150 - ((count - 1) * 38) / 2;
+      for (var i = 0; i < count; i++) { slots.push({ x: x0 + i * 38, y: y }); }
+    });
+    return slots.sort(function (a, b) { return b.y - a.y || Math.abs(a.x - 150) - Math.abs(b.x - 150); });
+  }
+
+  // Gravity: after gumballs leave, the ones above drop into the lowest open
+  // spots, each one falling roughly straight down, with a small bounce.
+  function settleGlobe() {
+    $$(".gumball.is-gone", globe).forEach(function (g) { g.remove(); });
+    var balls = $$(".gumball", globe).map(function (g) {
+      var c = g.firstChild;
+      return { g: g, x: +c.getAttribute("cx"), y: +c.getAttribute("cy") };
+    });
+    var slots = globeSlots().slice(0, balls.length);
+    var free = balls.slice();
+    slots.forEach(function (slot) {
+      // Pick the nearest gumball that is level with or above this spot
+      var best = null, bestCost = Infinity;
+      free.forEach(function (b) {
+        if (b.y > slot.y + 1) { return; }   // never fall upward
+        var cost = Math.abs(b.x - slot.x) * 3 + (slot.y - b.y);
+        if (cost < bestCost) { best = b; bestCost = cost; }
+      });
+      if (!best) { best = free[0]; }
+      free.splice(free.indexOf(best), 1);
+      var dx = best.x - slot.x;
+      var dy = best.y - slot.y;
+      if (!dx && !dy) { return; }
+      Array.prototype.forEach.call(best.g.querySelectorAll("circle"), function (c) {
+        c.setAttribute("cx", slot.x);
+        c.setAttribute("cy", slot.y);
+      });
+      if (reduceMotion.matches) { return; }
+      var fall = Math.abs(dy);
+      best.g.animate([
+        { transform: "translate(" + dx + "px," + dy + "px)", easing: "cubic-bezier(.55, 0, 1, .45)" },   // speeds up as it falls
+        { transform: "translate(0, 2px)", offset: 0.82, easing: "ease-out" },                           // lands, squishes a touch
+        { transform: "translate(0, -2px)", offset: 0.92 },                                               // tiny bounce
+        { transform: "none" }
+      ], { duration: 260 + fall * 4, delay: Math.random() * 60 });
+    });
+  }
+
   // Take one gumball out of the globe for each color in the list, using the
   // lowest gumball of that color (the one closest to the chute). If a color
   // isn't in the jar, the lowest gumball of any color goes instead.
@@ -336,6 +386,7 @@
     var targets = cards.filter(function (card) { return !card.hidden; });
     // Each card gets a gumball of its own color, taken from the jar
     var left = takeFromGlobe(targets.map(function (card) { return card.getAttribute("data-tone"); }));
+    setTimeout(settleGlobe, 650);   // after the shake, the rest fall into the gaps
 
     // When someone turns the knob by hand, follow the gumballs down
     if (!revealOnLand) {
