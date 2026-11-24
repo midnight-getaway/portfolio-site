@@ -31,7 +31,7 @@
       var c = sessionStorage.getItem("kv-bubble");
       if (c && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
         d.classList.add("is-arriving");
-        d.style.setProperty("--arrive", "var(--" + c + ")");
+        d.style.setProperty("--arrive", "var(--cat-" + c + ")");
       } else if (c) { sessionStorage.removeItem("kv-bubble"); }
     } catch (e) {}
   })(document.documentElement);
@@ -62,8 +62,8 @@
   </div>
 </header>
 
-<!-- data-color sets this page's gumball color (orchid, aqua, lemon, spring-green, periwinkle) -->
-<main id="main" class="case" data-color="periwinkle">
+<!-- data-color sets this page's category color: product, design, research, pm or cs (colors live in the --cat-* variables) -->
+<main id="main" class="case" data-color="product">
   <div class="container narrow">
 
     <a class="back-link" href="index.html#work" data-reveal="left"><span class="arrow" aria-hidden="true">←</span> All work</a>
@@ -133,7 +133,7 @@
     </section>
 
     <nav class="next-project" aria-label="Next project" data-reveal>
-      <a href="case-motivated-avoidance.html" data-bubble data-color="spring-green">Next project: Motivated Avoidance Study <span class="arrow" aria-hidden="true">→</span></a>
+      <a href="case-motivated-avoidance.html" data-bubble data-color="research">Next project: Motivated Avoidance Study <span class="arrow" aria-hidden="true">→</span></a>
     </nav>
 
   </div>

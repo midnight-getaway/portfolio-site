@@ -20,7 +20,9 @@
   var root = document.documentElement;
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   var canHover = window.matchMedia("(hover: hover)");
-  var COLORS = ["orchid", "aqua", "lemon", "spring-green", "periwinkle"];
+  // Category keys. Colors come from the --cat-* variables in styles.css.
+  var COLORS = ["product", "design", "research", "pm", "cs"];
+  function catColor(key) { return "var(--cat-" + key + ")"; }
   var SVG_NS = "http://www.w3.org/2000/svg";
   var arriving = root.classList.contains("is-arriving");
 
@@ -130,20 +132,12 @@
           g.style.animationDelay = (baseDelay || 0) + (rows.length - 1 - row) * 90 + i * 25 + "ms";
         }
 
-        var ball = makeCircle(x, y, 17);
         // Color by grid position so touching gumballs never match:
         // neighbors differ by 2 (same row) or by 1 and 3 (rows above/below).
         var col = Math.round((x - 36) / 19);
-        ball.style.fill = "var(--" + COLORS[(col + row * 3) % COLORS.length] + ")";
-        // Gloss and shade overlays (gradients defined in index.html)
-        var shade = makeCircle(x, y, 17);
-        shade.setAttribute("fill", "url(#gb-shade)");
-        var gloss = makeCircle(x, y, 17);
-        gloss.setAttribute("fill", "url(#gb-gloss)");
-
+        var ball = makeCircle(x, y, 17);
+        ball.setAttribute("fill", "url(#gb-" + COLORS[(col + row * 3) % COLORS.length] + ")");
         g.appendChild(ball);
-        g.appendChild(shade);
-        g.appendChild(gloss);
         globe.appendChild(g);
       }
     });
@@ -168,7 +162,34 @@
     return Math.max(0, balls.length - n);
   }
 
-  if (globe) { fillGlobe(!reduceMotion.matches, 650); }
+  // One shaded gradient per category: a highlight in the upper left and a
+  // darker edge at the bottom right, both mixed from the category color.
+  function makeGumballGradients() {
+    var defs = document.getElementById("gb-defs");
+    if (!defs) { return; }
+    COLORS.forEach(function (key) {
+      var grad = document.createElementNS(SVG_NS, "radialGradient");
+      grad.setAttribute("id", "gb-" + key);
+      grad.setAttribute("cx", "50%");
+      grad.setAttribute("cy", "50%");
+      grad.setAttribute("r", "55%");
+      grad.setAttribute("fx", "32%");
+      grad.setAttribute("fy", "28%");
+      grad.setAttribute("data-color", key);   // sets --flavor for the stops
+      [["0", "gb-stop-hi"], [".42", "gb-stop-base"], ["1", "gb-stop-lo"]].forEach(function (st) {
+        var stop = document.createElementNS(SVG_NS, "stop");
+        stop.setAttribute("offset", st[0]);
+        stop.setAttribute("class", st[1]);
+        grad.appendChild(stop);
+      });
+      defs.appendChild(grad);
+    });
+  }
+
+  if (globe) {
+    makeGumballGradients();
+    fillGlobe(!reduceMotion.matches, 650);
+  }
 
 
   /* ---------- 6. Project cards + the knob ---------- */
@@ -281,7 +302,7 @@
       ball.style.width = size + "px";
       ball.style.height = size + "px";
       ball.style.setProperty("--gb", size + "px");
-      ball.style.setProperty("--flavor", "var(--" + card.getAttribute("data-color") + ")");
+      ball.style.setProperty("--flavor", catColor(card.getAttribute("data-color")));
       document.body.appendChild(ball);
 
       var flight = ball.animate([
@@ -550,7 +571,7 @@
 
   function blowBubble(link, e) {
     var colorEl = link.closest("[data-color]");
-    var color = colorEl ? colorEl.getAttribute("data-color") : "orchid";
+    var color = colorEl ? colorEl.getAttribute("data-color") : "pm";
     var card = link.closest(".card");
     var origin = card ? $(".card-ball", card) : null;
     var r = origin
@@ -569,7 +590,7 @@
     var bubble = document.createElement("div");
     bubble.className = "bubble";
     bubble.setAttribute("aria-hidden", "true");
-    bubble.style.setProperty("--flavor", "var(--" + color + ")");
+    bubble.style.setProperty("--flavor", catColor(color));
     bubble.style.left = cx - size / 2 + "px";
     bubble.style.top = cy - size / 2 + "px";
     bubble.style.width = size + "px";
@@ -623,7 +644,7 @@
     var cover = document.createElement("div");
     cover.className = "pop-cover";
     cover.setAttribute("aria-hidden", "true");
-    cover.style.setProperty("--flavor", "var(--" + colorName + ")");
+    cover.style.setProperty("--flavor", catColor(colorName));
     document.body.appendChild(cover);
     root.classList.remove("is-arriving");   // the real cover takes over from the CSS one
 
@@ -633,7 +654,7 @@
   }
 
   if (arriving) {
-    var arriveColor = getStore("kv-bubble") || "orchid";
+    var arriveColor = getStore("kv-bubble") || "pm";
     removeStore("kv-bubble");
     popBubble(arriveColor);
     setTimeout(startReveal, 250);

@@ -22,19 +22,22 @@
   /* ===== PALETTE TOKENS: change colors here and only here ===== */
   --grape:          #5E139A;   /* text, machine body, primary buttons, links */
   --grape-deep:     #430D6E;   /* machine base, button shadows and borders, hover states */
-  --plum:           #2B1B3D;   /* body text and long-form case study text */
-  --orchid:         #EC77E4;   /* gumball accent (decorative only) */
-  --lemon:          #F8E14D;   /* gumball accent (decorative only) */
-  --aqua:           #6BDFE5;   /* gumball accent (decorative only) */
-  --spring-green:   #64D86A;   /* gumball accent (decorative only) */
-  --periwinkle:     #9A8CF5;   /* gumball accent (decorative only) */
+  --plum:           #2E1A47;   /* body text and long-form case study text */
+  --muted-plum:     #6B5585;   /* meta lines, footer, filter status */
+
+  /* Jewel-tone gumball colors (decorative only, never used for text) */
+  --cobalt:         #4C6FE0;
+  --teal:           #1A9E9A;
+  --emerald:        #3FA34D;
+  --berry:          #C2418F;
+  --gold:           #D9B23A;
   --lavender-white: #FBF8FF;   /* page background */
   --lilac:          #F1E7FA;   /* cards and tag pills */
   --white:          #FFFFFF;   /* button text, gloss highlights, coin slot */
 
   /* ===== ROLES: what each token is used for (built from the palette above) ===== */
-  --ink: var(--plum);                                                      /* body text: 13.2:1 on lilac */
-  --ink-soft: color-mix(in srgb, var(--plum) 72%, var(--lavender-white));  /* meta text: 5.43:1 on lilac, 6.18:1 on lavender-white */
+  --ink: var(--plum);              /* body text: 14.74:1 on lavender-white, 12.95:1 on lilac */
+  --ink-soft: var(--muted-plum);   /* muted text: 6.12:1 on lavender-white, 5.38:1 on lilac */
   --heading: var(--grape);                                                 /* headings, nav, buttons, links: 8.62:1 on lilac */
   --link: var(--grape);
   --muted: var(--ink-soft);
@@ -52,11 +55,14 @@
   --machine-line: var(--grape-deep);
   --glass: var(--white);
 
-  /* Project categories: each gets its own gumball color */
-  --cat-product: var(--periwinkle);
-  --cat-design: var(--aqua);
-  --cat-research: var(--spring-green);
-  --cat-pm: var(--orchid);
+  /* Project categories: the single source of truth for category colors.
+     Everything (filter chips, card gumballs, card labels, hero tags, case
+     study headers, the machine) uses these through data-color="<category>". */
+  --cat-product: var(--cobalt);
+  --cat-design: var(--teal);
+  --cat-research: var(--emerald);
+  --cat-pm: var(--berry);
+  --cat-cs: var(--gold);
 
   --radius: 18px;
   --max: 1200px;
@@ -81,11 +87,11 @@
 }
 
 /* Any element with data-color="..." gets that flavor as --flavor */
-[data-color="orchid"]       { --flavor: var(--orchid); }
-[data-color="lemon"]        { --flavor: var(--lemon); }
-[data-color="aqua"]         { --flavor: var(--aqua); }
-[data-color="spring-green"] { --flavor: var(--spring-green); }
-[data-color="periwinkle"]   { --flavor: var(--periwinkle); }
+[data-color="product"]  { --flavor: var(--cat-product); }
+[data-color="design"]   { --flavor: var(--cat-design); }
+[data-color="research"] { --flavor: var(--cat-research); }
+[data-color="pm"]       { --flavor: var(--cat-pm); }
+[data-color="cs"]       { --flavor: var(--cat-cs); }
 
 
 /* ---------- Reusable gumball ----------
@@ -97,18 +103,20 @@
 .flying-ball,
 .chip::before,
 .roles li::before,
+.card-tags li::before,
 .case-section ul li::before {
   --gb: 16px;
+  /* Highlight and shadow are mixed from the gumball's own color */
+  --gb-base: var(--flavor, var(--grape));
+  --gb-hi: color-mix(in srgb, var(--gb-base) 30%, var(--white));
+  --gb-lo: color-mix(in srgb, var(--gb-base) 62%, var(--grape-deep));
   border-radius: 50%;
   background:
-    radial-gradient(circle at 32% 28%,
-      color-mix(in srgb, var(--white) 95%, transparent) 0,
-      color-mix(in srgb, var(--white) 40%, transparent) 18%,
-      transparent 46%),
-    var(--flavor, var(--orchid));
+    radial-gradient(circle at 32% 28%, var(--gb-hi) 0, color-mix(in srgb, var(--gb-hi) 55%, transparent) 16%, transparent 42%),
+    radial-gradient(circle at 42% 38%, var(--gb-base) 48%, var(--gb-lo) 100%);
   box-shadow:
-    inset calc(var(--gb) * -.1) calc(var(--gb) * -.13) calc(var(--gb) * .22) var(--shade),
-    0 0 0 1px color-mix(in srgb, var(--grape-deep) 18%, transparent);
+    inset calc(var(--gb) * -.08) calc(var(--gb) * -.1) calc(var(--gb) * .2) color-mix(in srgb, var(--gb-lo) 55%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--gb-lo) 30%, transparent);
 }
 .gumball { display: inline-block; width: var(--gb); height: var(--gb); vertical-align: middle; }
 
@@ -178,10 +186,10 @@ main p a:not(.btn):focus-visible,
 main li a:not(.btn):hover,
 main li a:not(.btn):focus-visible {
   text-decoration-thickness: 2px;
-  text-decoration-color: var(--orchid);
+  text-decoration-color: var(--berry);
 }
 input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
-::selection { background: var(--lemon); color: var(--ink); }
+::selection { background: color-mix(in srgb, var(--berry) 22%, var(--white)); color: var(--ink); }
 
 .container {
   width: min(100% - 48px, var(--max));
@@ -429,14 +437,14 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
 
 /* Soft colored shapes drifting behind the hero */
 .blobs { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
-/* One very soft orchid glow behind the machine */
+/* One very soft berry glow behind the machine */
 .blob {
   position: absolute;
   border-radius: 50%;
   filter: blur(60px);
   opacity: .12;
 }
-.blob-1 { width: 460px; height: 460px; right: 2%; top: -60px; background: var(--orchid); }
+.blob-1 { width: 460px; height: 460px; right: 2%; top: -60px; background: var(--berry); }
 
 .hero .container {
   display: grid;
@@ -463,7 +471,7 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
   color: var(--heading);
   padding-bottom: .12em;
 }
-/* Hand-drawn orchid squiggle that sits below the words (never through them) */
+/* Hand-drawn berry squiggle that sits below the words (never through them) */
 .tagline em::after {
   content: "";
   position: absolute;
@@ -471,7 +479,7 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
   right: .1em;
   bottom: -.22em;
   height: .32em;
-  background: var(--orchid);
+  background: var(--berry);
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M3 9 C30 3 55 3 80 8 S130 13 155 7 S190 4 197 8' fill='none' stroke='black' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 0 0 / 100% 100%;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M3 9 C30 3 55 3 80 8 S130 13 155 7 S190 4 197 8' fill='none' stroke='black' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 0 0 / 100% 100%;
 }
@@ -525,12 +533,11 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
 }
 .roles li::before {
   --gb: 12px;
-  --flavor: var(--lemon);       /* one accent for the hero tags */
   content: "";
   width: var(--gb);
   height: var(--gb);
 }
-.roles li:hover { transform: translateY(-3px) rotate(-2deg); background: color-mix(in srgb, var(--lemon) 35%, var(--lilac)); }
+.roles li:hover { transform: translateY(-3px) rotate(-2deg); background: color-mix(in srgb, var(--flavor) 16%, var(--lilac)); }
 .intro {
   max-width: 52ch;
   margin: 18px 0 0;
@@ -568,8 +575,10 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
 .machine-base { fill: var(--machine-dark); stroke: var(--machine-line); stroke-width: 4; }
 
 /* Gloss and shade overlays for the SVG gumballs (gradients are in index.html) */
-.gb-gloss-hi  { stop-color: var(--white); }
-.gb-shade-lo  { stop-color: var(--grape); }
+/* Stops for the machine's gumball gradients (created in main.js, one per category) */
+.gb-stop-hi   { stop-color: color-mix(in srgb, var(--flavor) 30%, var(--white)); }
+.gb-stop-base { stop-color: var(--flavor); }
+.gb-stop-lo   { stop-color: color-mix(in srgb, var(--flavor) 62%, var(--grape-deep)); }
 .gumball {
   transform-box: fill-box;
   transform-origin: center;
@@ -620,7 +629,7 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
 .knob.is-idle::after { animation: ring 2s ease-out 2.4s 3; }
 .knob:hover { scale: 1.08; }
 .knob:focus-visible {
-  outline: 4px solid var(--lemon);       /* 7.8:1 against the grape body */
+  outline: 4px solid var(--gold);        /* 5.10:1 against the grape body */
   outline-offset: 4px;
 }
 .knob:active { scale: .94; }
@@ -630,13 +639,14 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
   left: 61%;
   top: 72%;
   margin: 0;
+  color: var(--grape);
   pointer-events: none;
 }
 .turn-hint svg {
   display: block;
   width: 90px;
   fill: none;
-  stroke: var(--ink);
+  stroke: currentColor;   /* grape, from .turn-hint */
   stroke-width: 2.5;
   stroke-linecap: round;
 }
@@ -808,13 +818,11 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
 }
 .card-tags li { display: inline-flex; align-items: center; gap: 6px; }
 .card-tags li::before {
-  --gb: 10px;
+  --gb: 11px;
   content: "";
+  flex: none;
   width: var(--gb);
   height: var(--gb);
-  border-radius: 50%;
-  background: var(--flavor);
-  box-shadow: inset -1px -1px 2px var(--shade), 0 0 0 1px color-mix(in srgb, var(--grape-deep) 25%, transparent);
 }
 
 /* "In progress" badge: delete the <span class="status-badge" data-status="draft"> to remove it */
@@ -920,8 +928,8 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
   position: absolute;
   inset: -14px;
   border-radius: 50%;
-  /* Two accents for this section: periwinkle and lemon */
-  background: conic-gradient(var(--periwinkle), var(--lemon), var(--periwinkle), var(--lemon), var(--periwinkle));
+  /* Two accents for this section: berry and gold */
+  background: conic-gradient(var(--berry), var(--gold), var(--berry), var(--gold), var(--berry));
 }
 .headshot-wrap:hover::before { animation: spin 3s linear infinite; }
 .headshot-wrap::after {

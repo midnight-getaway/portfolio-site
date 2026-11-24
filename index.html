@@ -31,7 +31,7 @@
       var c = sessionStorage.getItem("kv-bubble");
       if (c && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
         d.classList.add("is-arriving");
-        d.style.setProperty("--arrive", "var(--" + c + ")");
+        d.style.setProperty("--arrive", "var(--cat-" + c + ")");
       } else if (c) { sessionStorage.removeItem("kv-bubble"); }
     } catch (e) {}
   })(document.documentElement);
@@ -78,10 +78,10 @@
         <h1 id="hero-title" data-split>Hi, I'm Keady.</h1>
         <p class="tagline" data-reveal style="--d: 550ms">Products that start with people.<br>And end <em>a little sweeter.</em></p>
         <ul class="roles" data-reveal style="--d: 700ms" aria-label="What I do">
-          <li data-color="periwinkle">Product</li>
-          <li data-color="spring-green">UX research</li>
-          <li data-color="orchid">Project management</li>
-          <li data-color="lemon">Customer success</li>
+          <li data-color="product">Product</li>
+          <li data-color="research">UX research</li>
+          <li data-color="pm">Project management</li>
+          <li data-color="cs">Customer success</li>
         </ul>
         <p class="intro" data-reveal style="--d: 820ms">I help teams understand their users, ship the right thing, and make sure people actually adopt it.</p>
         <div class="hero-actions" data-reveal style="--d: 950ms">
@@ -93,18 +93,8 @@
       <!-- Gumball machine. The gumballs inside the globe are added by js/main.js -->
       <div class="machine" data-reveal="drop" style="--d: 250ms">
         <svg viewBox="0 0 300 480" role="img" aria-label="A purple gumball machine full of colorful gumballs">
-          <defs>
-            <!-- Gloss (upper left) and shade (bottom right) laid over each gumball -->
-            <radialGradient id="gb-gloss" cx="32%" cy="28%" r="50%">
-              <stop offset="0" class="gb-gloss-hi" stop-opacity=".95"/>
-              <stop offset=".4" class="gb-gloss-hi" stop-opacity=".35"/>
-              <stop offset="1" class="gb-gloss-hi" stop-opacity="0"/>
-            </radialGradient>
-            <radialGradient id="gb-shade" cx="35%" cy="30%" r="80%">
-              <stop offset=".55" class="gb-shade-lo" stop-opacity="0"/>
-              <stop offset="1" class="gb-shade-lo" stop-opacity=".4"/>
-            </radialGradient>
-          </defs>
+          <!-- Gumball gradients, one per category, are added here by js/main.js -->
+          <defs id="gb-defs"></defs>
           <circle class="globe-glass" cx="150" cy="150" r="140"/>
           <g id="globe-balls"></g>
           <path class="globe-shine" d="M25 105 A134 134 0 0 1 104 24"/>
@@ -137,11 +127,11 @@
       <!-- data-filter must match the words in each card's data-flavors -->
       <div class="chips" id="flavor-chips" role="group" aria-labelledby="flavor-label">
         <button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>
-        <button class="chip" type="button" data-filter="product" data-color="periwinkle" aria-pressed="false">Product</button>
-        <button class="chip" type="button" data-filter="design" data-color="aqua" aria-pressed="false">UX Design</button>
-        <button class="chip" type="button" data-filter="research" data-color="spring-green" aria-pressed="false">UX Research</button>
-        <button class="chip" type="button" data-filter="pm" data-color="orchid" aria-pressed="false">Project Mgmt</button>
-        <button class="chip" type="button" data-filter="cs" data-color="lemon" aria-pressed="false">Customer Success</button>
+        <button class="chip" type="button" data-filter="product" data-color="product" aria-pressed="false">Product</button>
+        <button class="chip" type="button" data-filter="design" data-color="design" aria-pressed="false">UX Design</button>
+        <button class="chip" type="button" data-filter="research" data-color="research" aria-pressed="false">UX Research</button>
+        <button class="chip" type="button" data-filter="pm" data-color="pm" aria-pressed="false">Project Mgmt</button>
+        <button class="chip" type="button" data-filter="cs" data-color="cs" aria-pressed="false">Customer Success</button>
       </div>
 
       <!-- Filled in by js/main.js; role="status" makes screen readers announce each change -->
@@ -153,22 +143,22 @@
         <div class="grid">
           <!--
             CARD TEMPLATE
-            data-color   = the gumball color of the card's PRIMARY category:
-                           product = periwinkle, design = aqua, research = spring-green,
-                           pm = orchid, cs (customer success) = lemon
+            data-color   = the card's PRIMARY category, which sets its gumball color:
+                           product, design, research, pm or cs (customer success).
+                           The colors themselves live in the --cat-* variables in styles.css.
             data-flavors = every filter that shows this card, primary first, separated by spaces
             .card-tags   = the same categories as visible labels (one <li> per category)
             .status-badge data-status="draft" = the "In progress" badge; delete the span when the case study is done
           -->
-          <article class="card" data-color="orchid" data-flavors="pm cs">
+          <article class="card" data-color="pm" data-flavors="pm cs">
             <div class="card-head">
               <span class="card-ball" aria-hidden="true"></span>
               <div>
                 <h3 class="card-title">Partner Platform Rollout</h3>
                 <p class="card-year">2026 <span class="status-badge" data-status="draft">In progress</span></p>
                 <ul class="card-tags" aria-label="Categories">
-                  <li data-color="orchid">Project management</li>
-                  <li data-color="lemon">Customer success</li>
+                  <li data-color="pm">Project management</li>
+                  <li data-color="cs">Customer success</li>
                 </ul>
               </div>
             </div>
@@ -177,14 +167,14 @@
             <a class="card-link" href="case-partner-platform.html" data-bubble>Read case study<span class="sr-only">: Partner Platform Rollout</span> <span class="arrow" aria-hidden="true">→</span></a>
           </article>
 
-          <article class="card" data-color="periwinkle" data-flavors="product">
+          <article class="card" data-color="product" data-flavors="product">
             <div class="card-head">
               <span class="card-ball" aria-hidden="true"></span>
               <div>
                 <h3 class="card-title">CRM to Power BI Pipeline</h3>
                 <p class="card-year">2026 <span class="status-badge" data-status="draft">In progress</span></p>
                 <ul class="card-tags" aria-label="Categories">
-                  <li data-color="periwinkle">Product</li>
+                  <li data-color="product">Product</li>
                 </ul>
               </div>
             </div>
@@ -193,14 +183,14 @@
             <a class="card-link" href="case-crm-power-bi.html" data-bubble>Read case study<span class="sr-only">: CRM to Power BI Pipeline</span> <span class="arrow" aria-hidden="true">→</span></a>
           </article>
 
-          <article class="card" data-color="spring-green" data-flavors="research">
+          <article class="card" data-color="research" data-flavors="research">
             <div class="card-head">
               <span class="card-ball" aria-hidden="true"></span>
               <div>
                 <h3 class="card-title">Motivated Avoidance Study</h3>
                 <p class="card-year">2026 <span class="status-badge" data-status="draft">In progress</span></p>
                 <ul class="card-tags" aria-label="Categories">
-                  <li data-color="spring-green">UX research</li>
+                  <li data-color="research">UX research</li>
                 </ul>
               </div>
             </div>
@@ -209,14 +199,14 @@
             <a class="card-link" href="case-motivated-avoidance.html" data-bubble>Read case study<span class="sr-only">: Motivated Avoidance Study</span> <span class="arrow" aria-hidden="true">→</span></a>
           </article>
 
-          <article class="card" data-color="aqua" data-flavors="design">
+          <article class="card" data-color="design" data-flavors="design">
             <div class="card-head">
               <span class="card-ball" aria-hidden="true"></span>
               <div>
                 <h3 class="card-title">Skylight</h3>
                 <p class="card-year">2026 <span class="status-badge" data-status="draft">In progress</span></p>
                 <ul class="card-tags" aria-label="Categories">
-                  <li data-color="aqua">UX design</li>
+                  <li data-color="design">UX design</li>
                 </ul>
               </div>
             </div>
