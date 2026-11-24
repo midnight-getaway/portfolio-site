@@ -27,7 +27,7 @@
   --lemon:          #F8E14D;   /* gumball accent (decorative only) */
   --aqua:           #6BDFE5;   /* gumball accent (decorative only) */
   --spring-green:   #64D86A;   /* gumball accent (decorative only) */
-  --tangerine:      #EC6B2D;   /* gumball accent (decorative only) */
+  --periwinkle:     #9A8CF5;   /* gumball accent (decorative only) */
   --lavender-white: #FBF8FF;   /* page background */
   --lilac:          #F1E7FA;   /* cards and tag pills */
   --white:          #FFFFFF;   /* button text, gloss highlights, coin slot */
@@ -53,7 +53,7 @@
   --glass: var(--white);
 
   /* Project categories: each gets its own gumball color */
-  --cat-product: var(--tangerine);
+  --cat-product: var(--periwinkle);
   --cat-design: var(--aqua);
   --cat-research: var(--spring-green);
   --cat-pm: var(--orchid);
@@ -85,7 +85,7 @@
 [data-color="lemon"]        { --flavor: var(--lemon); }
 [data-color="aqua"]         { --flavor: var(--aqua); }
 [data-color="spring-green"] { --flavor: var(--spring-green); }
-[data-color="tangerine"]    { --flavor: var(--tangerine); }
+[data-color="periwinkle"]   { --flavor: var(--periwinkle); }
 
 
 /* ---------- Reusable gumball ----------
@@ -920,8 +920,8 @@ input, select, textarea { font-family: var(--font-body); font-size: 1rem; }
   position: absolute;
   inset: -14px;
   border-radius: 50%;
-  /* Two accents for this section: tangerine and lemon */
-  background: conic-gradient(var(--tangerine), var(--lemon), var(--tangerine), var(--lemon), var(--tangerine));
+  /* Two accents for this section: periwinkle and lemon */
+  background: conic-gradient(var(--periwinkle), var(--lemon), var(--periwinkle), var(--lemon), var(--periwinkle));
 }
 .headshot-wrap:hover::before { animation: spin 3s linear infinite; }
 .headshot-wrap::after {

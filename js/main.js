@@ -20,7 +20,7 @@
   var root = document.documentElement;
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   var canHover = window.matchMedia("(hover: hover)");
-  var COLORS = ["orchid", "aqua", "lemon", "spring-green", "tangerine"];
+  var COLORS = ["orchid", "aqua", "lemon", "spring-green", "periwinkle"];
   var SVG_NS = "http://www.w3.org/2000/svg";
   var arriving = root.classList.contains("is-arriving");
 
