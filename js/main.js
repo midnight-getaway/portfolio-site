@@ -45,10 +45,15 @@
 
   /* ---------- 3. Bouncy letters ---------- */
   // <h1 data-split>Hi, I'm Keady.</h1> becomes one <span> per letter.
-  // Screen readers still get the plain text.
+  // The text exists only once: the heading gets an aria-label with the plain
+  // text, and the animated letters are hidden from screen readers, so the
+  // heading is announced exactly once. With reduced motion, nothing is split.
   $$("[data-split]").forEach(function (el) {
     if (reduceMotion.matches) { return; }
     var text = el.textContent;
+    // aria-label only works on the heading itself, not on a span inside it
+    var heading = el.closest("h1, h2, h3, h4, h5, h6") || el;
+    heading.setAttribute("aria-label", heading.textContent.trim());
     var i = 0;
     var visual = document.createElement("span");
     visual.setAttribute("aria-hidden", "true");
@@ -67,12 +72,7 @@
       visual.appendChild(wordEl);
     });
 
-    var plain = document.createElement("span");
-    plain.className = "sr-only";
-    plain.textContent = text;
-
     el.textContent = "";
-    el.appendChild(plain);
     el.appendChild(visual);
     if (arriving) { el.style.setProperty("--split-delay", "380ms"); }
   });
@@ -185,10 +185,11 @@
 
   // How each filter is said in the status line ("Showing 1 project in UX research")
   var FILTER_NAMES = {
-    product: "Product",
+    product: "product",
     design: "UX design",
     research: "UX research",
-    pm: "project management"
+    pm: "project management",
+    cs: "customer success"
   };
   var filterRun = 0;   // lets a new click cancel an animation still running
   var cards = tray ? $$(".card", tray) : [];
@@ -539,6 +540,9 @@
   document.addEventListener("click", function (e) {
     var link = e.target.closest("a[data-bubble]");
     if (!link || reduceMotion.matches || root.classList.contains("is-leaving")) { return; }
+    // Only the first case study opened in a visit gets the bubble;
+    // after that, links open instantly so browsing stays quick.
+    if (getStore("kv-bubble-seen")) { return; }
     if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) { return; }
     e.preventDefault();
     blowBubble(link, e);
@@ -590,20 +594,18 @@
       { borderRadius: "47% 53% 51% 49% / 53% 47% 52% 48%" },
       { borderRadius: "52% 48% 47% 53% / 48% 53% 48% 52%" },
       { borderRadius: "49% 51% 52% 48% / 51% 49% 50% 50%" }
-    ], { duration: 950, easing: "ease-in-out", fill: "forwards" });
+    ], { duration: 380, easing: "ease-in-out", fill: "forwards" });
 
-    // Two quick breaths with a small wobble, then it swells to fill the screen.
-    // Kept under a second so it never feels like a wait.
+    // One quick breath, then it swells to fill the screen (about 380 ms)
     bubble.animate([
       f(0,    0.1,  0.1,  0),
-      f(0.15, 0.75, 0.7,  0.22),
-      f(0.17, 0.7,  0.73, 0.3,  "ease-in-out"),
-      f(0.45, 1.9,  1.8,  0.58),
-      f(0.5,  1.82, 1.87, 0.66, "cubic-bezier(.5, 0, .75, 0)"),
+      f(0.3,  1.2,  1.1,  0.35),
+      f(0.35, 1.1,  1.16, 0.45, "cubic-bezier(.5, 0, .75, 0)"),
       f(1,    cover, cover, 1)
-    ], { duration: 950, fill: "forwards" })
+    ], { duration: 380, fill: "forwards" })
       .onfinish = function () {
         setStore("kv-bubble", color);
+        setStore("kv-bubble-seen", "1");
         window.location.href = link.href;
       };
   }
@@ -625,16 +627,16 @@
     document.body.appendChild(cover);
     root.classList.remove("is-arriving");   // the real cover takes over from the CSS one
 
-    setTimeout(function () { cover.classList.add("is-straining"); }, 30);
-    setTimeout(function () { cover.classList.add("is-popping"); }, 170);
-    setTimeout(function () { cover.remove(); }, 560);
+    setTimeout(function () { cover.classList.add("is-straining"); }, 20);
+    setTimeout(function () { cover.classList.add("is-popping"); }, 100);
+    setTimeout(function () { cover.remove(); }, 400);
   }
 
   if (arriving) {
     var arriveColor = getStore("kv-bubble") || "orchid";
     removeStore("kv-bubble");
     popBubble(arriveColor);
-    setTimeout(startReveal, 350);
+    setTimeout(startReveal, 250);
   } else {
     startReveal();
   }

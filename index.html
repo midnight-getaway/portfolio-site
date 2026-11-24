@@ -4,7 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Keady Van Zandt | Product, UX Research &amp; Project Management</title>
-<meta name="description" content="Portfolio of Keady Van Zandt. Design that starts with people. And ends a little sweeter.">
+<meta name="description" content="Portfolio of Keady Van Zandt. Products that start with people. And end a little sweeter.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<!-- Link previews (LinkedIn, Slack, iMessage, etc.) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Keady Van Zandt">
+<meta property="og:title" content="Keady Van Zandt | Product, UX Research &amp; Project Management">
+<meta property="og:description" content="Portfolio of Keady Van Zandt. Products that start with people. And end a little sweeter.">
+<meta property="og:url" content="https://midnight-getaway.github.io/portfolio-site/">
+<meta property="og:image" content="https://midnight-getaway.github.io/portfolio-site/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Keady Van Zandt: Products that start with people. And end a little sweeter.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Keady Van Zandt | Product, UX Research &amp; Project Management">
+<meta name="twitter:description" content="Portfolio of Keady Van Zandt. Products that start with people. And end a little sweeter.">
+<meta name="twitter:image" content="https://midnight-getaway.github.io/portfolio-site/assets/og-image.png">
 <script>
   /* Runs before the page appears. Turns on animations, and if you arrived
      through a bubble, covers the page so the bubble can pop. Keep this on every page. */
@@ -38,7 +55,7 @@
     </a>
     <nav class="site-nav" aria-label="Main">
       <a href="#work">Work</a>
-      <a href="playground.html">Playground</a>
+      <!-- Hidden until Playground has real content: <a href="playground.html">Playground</a> -->
       <a href="#contact">Contact</a>
       <!-- Put your resume PDF in the assets folder and name it Resume.pdf -->
       <a class="btn btn-sm" href="assets/Resume.pdf" target="_blank" rel="noopener">Resume</a>
@@ -59,13 +76,14 @@
       <div class="hero-text">
         <!-- data-split makes each letter bounce in -->
         <h1 id="hero-title" data-split>Hi, I'm Keady.</h1>
-        <p class="tagline" data-reveal style="--d: 550ms">Design that starts with people.<br>And ends <em>a little sweeter.</em></p>
+        <p class="tagline" data-reveal style="--d: 550ms">Products that start with people.<br>And end <em>a little sweeter.</em></p>
         <ul class="roles" data-reveal style="--d: 700ms" aria-label="What I do">
           <li data-color="tangerine">Product</li>
           <li data-color="spring-green">UX research</li>
           <li data-color="orchid">Project management</li>
+          <li data-color="lemon">Customer success</li>
         </ul>
-        <p class="intro" data-reveal style="--d: 820ms">[Write one or two sentences about who you are and the problems you like to solve. Keep it short so people get the point in a few seconds.]</p>
+        <p class="intro" data-reveal style="--d: 820ms">I help teams understand their users, ship the right thing, and make sure people actually adopt it.</p>
         <div class="hero-actions" data-reveal style="--d: 950ms">
           <a class="btn" id="see-work" href="#work">See my work</a>
           <a class="btn btn-outline" href="assets/Resume.pdf" target="_blank" rel="noopener">Resume</a>
@@ -123,10 +141,11 @@
         <button class="chip" type="button" data-filter="design" data-color="aqua" aria-pressed="false">UX Design</button>
         <button class="chip" type="button" data-filter="research" data-color="spring-green" aria-pressed="false">UX Research</button>
         <button class="chip" type="button" data-filter="pm" data-color="orchid" aria-pressed="false">Project Mgmt</button>
+        <button class="chip" type="button" data-filter="cs" data-color="lemon" aria-pressed="false">Customer Success</button>
       </div>
 
       <!-- Filled in by js/main.js; role="status" makes screen readers announce each change -->
-      <p class="filter-status" id="filter-status" role="status" aria-live="polite"></p>
+      <p class="filter-status" id="filter-status" role="status" aria-live="polite">Showing all 4 projects</p>
       <p class="start-with" id="start-with"></p>
 
       <!-- Cards animate in on their own when this section scrolls into view (js/main.js) -->
@@ -134,15 +153,23 @@
         <div class="grid">
           <!--
             CARD TEMPLATE
-            data-color   = gumball color (orchid, aqua, lemon, spring-green, tangerine)
-            data-flavors = which filter chips show this card (product, design, research, pm), separated by spaces
+            data-color   = the gumball color of the card's PRIMARY category:
+                           product = tangerine, design = aqua, research = spring-green,
+                           pm = orchid, cs (customer success) = lemon
+            data-flavors = every filter that shows this card, primary first, separated by spaces
+            .card-tags   = the same categories as visible labels (one <li> per category)
+            .status-badge data-status="draft" = the "In progress" badge; delete the span when the case study is done
           -->
-          <article class="card" data-color="orchid" data-flavors="pm product">
+          <article class="card" data-color="orchid" data-flavors="pm cs">
             <div class="card-head">
               <span class="card-ball" aria-hidden="true"></span>
               <div>
                 <h3 class="card-title">Partner Platform Rollout</h3>
-                <p class="card-year">2026</p>
+                <p class="card-year">2026 <span class="status-badge" data-status="draft">In progress</span></p>
+                <ul class="card-tags" aria-label="Categories">
+                  <li data-color="orchid">Project management</li>
+                  <li data-color="lemon">Customer success</li>
+                </ul>
               </div>
             </div>
             <p class="card-headline">Getting nearly 1,000 agencies onto one ordering system</p>
@@ -155,7 +182,10 @@
               <span class="card-ball" aria-hidden="true"></span>
               <div>
                 <h3 class="card-title">CRM to Power BI Pipeline</h3>
-                <p class="card-year">2026</p>
+                <p class="card-year">2026 <span class="status-badge" data-status="draft">In progress</span></p>
+                <ul class="card-tags" aria-label="Categories">
+                  <li data-color="tangerine">Product</li>
+                </ul>
               </div>
             </div>
             <p class="card-headline">From CRM entry to dashboards leadership actually opens</p>
@@ -168,7 +198,10 @@
               <span class="card-ball" aria-hidden="true"></span>
               <div>
                 <h3 class="card-title">Motivated Avoidance Study</h3>
-                <p class="card-year">2026</p>
+                <p class="card-year">2026 <span class="status-badge" data-status="draft">In progress</span></p>
+                <ul class="card-tags" aria-label="Categories">
+                  <li data-color="spring-green">UX research</li>
+                </ul>
               </div>
             </div>
             <p class="card-headline">Why people skip the chatbot even when they can use it</p>
@@ -181,10 +214,13 @@
               <span class="card-ball" aria-hidden="true"></span>
               <div>
                 <h3 class="card-title">Skylight</h3>
-                <p class="card-year">2026</p>
+                <p class="card-year">2026 <span class="status-badge" data-status="draft">In progress</span></p>
+                <ul class="card-tags" aria-label="Categories">
+                  <li data-color="aqua">UX design</li>
+                </ul>
               </div>
             </div>
-            <p class="card-headline">An ERP that bends to the nonprofit, not the other way</p>
+            <p class="card-headline">A system that adapts to how teams actually work</p>
             <p class="card-meta">Conceptual model · AI agents</p>
             <a class="card-link" href="case-skylight.html" data-bubble>Read case study<span class="sr-only">: Skylight</span> <span class="arrow" aria-hidden="true">→</span></a>
           </article>
@@ -203,11 +239,11 @@
       </div>
       <div>
         <h2 class="section-title" id="contact-title" data-reveal style="--d: 150ms">Let's make something sweet.</h2>
-        <p data-reveal style="--d: 250ms">[One line inviting people to reach out: what you're looking for, or what you'd love to work on.]</p>
+        <p data-reveal style="--d: 250ms">I'm looking for product, UX, customer success and project management roles. If that sounds like your team, let's talk.</p>
         <div class="hero-actions" data-reveal style="--d: 350ms">
-          <!-- Replace with your real email address and LinkedIn URL -->
-          <a class="btn" href="mailto:your-email@example.com">Email me</a>
-          <a class="btn btn-outline" href="https://www.linkedin.com/in/your-profile" target="_blank" rel="noopener">LinkedIn</a>
+          <a class="btn" href="mailto:keadycvz@gmail.com">Email me</a>
+          <a class="btn btn-outline" href="https://www.linkedin.com/in/keady-van-zandt/" target="_blank" rel="noopener">LinkedIn</a>
+          <a class="btn btn-outline" href="https://github.com/midnight-getaway" target="_blank" rel="noopener">GitHub</a>
         </div>
       </div>
     </div>
